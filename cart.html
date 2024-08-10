@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="cart.css">
+  <title>Document</title>
+</head>
+
+<body>
+  <div id="cart-container" style=>
+    <div class="cart">
+      <button class="close-cart" onclick="closeCart()">✕</button>
+      <h2>Your Cart</h2>
+      <hr>
+      <div class="cart-item">
+        <img src="./products/Screenshot 2024-07-23 212737.png" alt="Product Image">
+        <div class="item-details">
+          <p class="product-name">Product Name</p>
+          <button class="remove-item" onclick="removeItem(this)">✕</button>
+          <p class="product-variants">Variants: Lorem ipsum dolor, sit amet consectetur adipisicing elit</p>
+          <p class="product-price">¥ 100.00</p>         
+          <input type="number" class="product-quantity" value="1" min="1">        
+          
+        </div>
+      </div>
+      <div class="cart-item">
+        <img src="./products/Screenshot 2024-07-23 214138.png" alt="Product Image">
+        <div class="item-details">
+          <p class="product-name">Product Name</p>
+          <button class="remove-item" onclick="removeItem(this)">✕</button>
+          <p class="product-variants">Variants: Lorem, ipsum dolor sit amet consectetur adipisicing elit.</p>
+          <p class="product-price">¥ 100.00</p>
+          <input type="number" class="product-quantity" value="1">
+          
+        </div>
+      </div>
+      <p class="total">TOTAL: ¥ 200.00</p>
+      <button class="request-order">REQUEST ORDER</button>
+    </div>
+  </div>
+  
+</body>
+</html>

@@ -1,0 +1,19 @@
+{
+    "manifest_version": 2,
+    "name": "Keibo",
+    "version": "1.0",
+    "description": "Adds a floating div to the bottom of web pages",
+    "permissions": [
+      "activeTab"
+    ],
+    "content_scripts": [
+      {
+        "matches": ["*://*/*"],
+        "js": ["content.js"],
+        "css": ["toolbar.css"]
+      }
+    ],
+    "web_accessible_resources": [
+    "KieboLogo.svg"
+  ]
+  }

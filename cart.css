@@ -1,0 +1,139 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    width: 799px;
+    height: 555px;
+}
+
+#cart-container {
+    position: fixed;
+    top: 20px; /* Adjusted to place the cart towards the top */
+    right: 20px; /* Align the cart slightly inset from the right edge */
+    width: 350px; /* Reduced width for a more compact design */
+    height: auto; /* Auto height to fit content */
+    background-color: white;
+    border: 1px solid #ccc; /* Softer border */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* Stronger shadow for emphasis */
+    z-index: 10000;
+    padding: 20px;
+    border-radius: 8px; /* Rounded corners */
+    overflow-y: auto; /* Allow scrolling if content overflows */
+}
+
+.cart {
+    padding: 0;
+}
+.close-cart {
+    background-color: transparent;
+    border: none;
+    color: #333;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.close-cart:hover {
+    color: #e53935; /* Red color on hover */
+}
+
+h2 {
+    font-size: 18px; /* Slightly smaller font size */
+    margin-bottom: 15px;
+    font-weight: normal; /* Lighter font weight */
+    color: #666; /* Softer color */
+    text-transform: uppercase; /* Uppercase text to match image */
+}
+
+.cart-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #ddd; /* Lighter divider */
+    padding-bottom: 15px;
+}
+
+.cart-item img {
+    width: 50px; /* Adjusted image size */
+    height: 50px; /* Uniform height */
+    margin-right: 15px; /* Spacing adjustment */
+    object-fit: cover;
+    border-radius: 5px; /* Rounded image corners */
+}
+
+.item-details {
+    flex-grow: 1;
+}
+
+.product-name {
+    font-weight: bold;
+    margin: 0;
+    font-size: 14px; /* Consistent font size */
+    color: #333; /* Darker text */
+}
+
+.product-variants {
+    font-size: 12px; /* Slightly smaller to fit better */
+    color: #888; /* Lighter variant color */
+    margin: 5px 0;
+}
+
+.product-price {
+    font-weight: bold;
+    color: #e53935; /* Red price color */
+    text-align: right; /* Align the price to the right */
+    margin-left: auto; /* Push price to the far right */
+}
+
+.product-quantity {
+    width: 50px; /* Slightly wider to accommodate numbers */
+    text-align: center;
+    border: 1px solid #ccc; /* Soft border */
+    padding: 5px;
+    border-radius: 5px; /* Rounded corners */
+    font-size: 14px; /* Match font size */
+    color: #333; /* Text color */
+    margin-right: 10px; /* Space before the remove button */
+}
+.remove-item {
+    background-color: transparent;
+    border: none;
+    color: #e53935; /* Red color */
+    cursor: pointer;
+    font-size: 18px;
+    margin-left: 10px;
+    font-weight: bold;
+}
+
+.remove-item:hover {
+    color: #b71c1c; /* Darker red on hover */
+}
+
+.total {
+    font-weight: bold;
+    text-align: right;
+    margin: 20px 0 10px 0;
+    font-size: 18px; /* Increased font size */
+    color: #333; /* Darker text */
+}
+
+.request-order {
+    width: 100%;
+    padding: 15px;
+    background-color: #b26ba5; /* Button color to match the theme */
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px; /* Rounded corners */
+    font-weight: bold;
+    font-size: 16px;
+    text-align: center;
+    text-transform: uppercase; /* Match text style */
+}
+
+.request-order:hover {
+    background-color: #9a5190; /* Slight hover effect */
+}
