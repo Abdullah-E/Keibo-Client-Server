@@ -20,6 +20,7 @@
                     color: white;
                     }
 
+                    
                     #floating-toolbar {
                     position: fixed;
                     bottom: 0;
