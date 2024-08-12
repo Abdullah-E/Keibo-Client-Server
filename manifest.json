@@ -23,6 +23,7 @@
   ],
   
   "web_accessible_resources": [
-    "toolbar.html"
+    "toolbar.html",
+    "cart.html"
   ]
 }
