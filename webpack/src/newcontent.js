@@ -49,6 +49,10 @@ const createToolbar = () => {
       document.body.appendChild(toolbar);
       console.log('Toolbar loaded successfully');
   });
+
+  
+
+createToolbar();
 //   const button = document.getElementById('view-cart');
 //   const cartStyle = document.createElement('style');
 //   cartStyle.textContent = cartStyleStr;
@@ -81,8 +85,6 @@ const createToolbar = () => {
 ;
 
 
-createToolbar();
-
 
 // Define the function
 const createCart = () => {
@@ -106,7 +108,7 @@ const createCart = () => {
                 console.error('Unable to access iframe contentWindow');
                 return;
             }
-
+            console.log('Iframe contentWindow:', cartIframe.contentWindow);
             // Try to access the document inside the iframe
             try {
                 const iframeDocument = cartIframe.contentWindow.document;

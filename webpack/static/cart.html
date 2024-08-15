@@ -3,18 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="cart.css">
+  <link rel="stylesheet" href="./cart.css">
   <title>Document</title>
 </head>
 
 <body>
   <div id="cart-container" style=>
     <div class="cart">
-      <button class="close-cart" onclick="window.location.href = 'toolbar.html'">✕</button>
+      <button id="close-cart" class="close-cart">✕</button>
       <h2>Your Cart</h2>
       <hr>
       <div class="cart-item">
-        <img src="./products/Screenshot 2024-07-23 212737.png" alt="Product Image">
+        <img src="./assests/Screenshot 2024-07-23 212737.png" alt="Product Image">
         <div class="item-details">
           <p class="product-name">Product Name</p>
           <button class="remove-item" onclick="removeItem(this)">✕</button>
@@ -25,7 +25,7 @@
         </div>
       </div>
       <div class="cart-item">
-        <img src="./products/Screenshot 2024-07-23 214138.png" alt="Product Image">
+        <img src="./assests/Screenshot 2024-07-23 213914.png" alt="Product Image">
         <div class="item-details">
           <p class="product-name">Product Name</p>
           <button class="remove-item" onclick="removeItem(this)">✕</button>

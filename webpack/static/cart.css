@@ -1,24 +1,17 @@
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    width: 799px;
-    height: 555px;
-}
 
 #cart-container {
     position: fixed;
-    top: 20px; /* Adjusted to place the cart towards the top */
-    right: 20px; /* Align the cart slightly inset from the right edge */
-    width: 350px; /* Reduced width for a more compact design */
-    height: auto; /* Auto height to fit content */
+    top: 0px;
+    right: 0px;
+    width: 350px;
+    height: 100%;
     background-color: white;
-    border: 1px solid #ccc; /* Softer border */
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* Stronger shadow for emphasis */
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
     z-index: 10000;
-    padding: 20px;
-    border-radius: 8px; /* Rounded corners */
-    overflow-y: auto; /* Allow scrolling if content overflows */
+    padding: 10px;
+    border-radius: 0px;
+    overflow-y: auto;
 }
 
 .cart {
@@ -27,13 +20,13 @@ body {
 .close-cart {
     background-color: transparent;
     border: none;
-    color: #333;
-    font-size: 20px;
+    color: #c5c5c5;
+    font-size: 12px;
     font-weight: bold;
     cursor: pointer;
     position: absolute;
     top: 10px;
-    right: 10px;
+    right: 16px;
 }
 
 .close-cart:hover {
@@ -41,13 +34,20 @@ body {
 }
 
 h2 {
-    font-size: 18px; /* Slightly smaller font size */
+    font-size: 14px;
     margin-bottom: 15px;
-    font-weight: normal; /* Lighter font weight */
-    color: #666; /* Softer color */
-    text-transform: uppercase; /* Uppercase text to match image */
+    font-weight: normal;
+    color: #bfa5cd;
+    text-transform: uppercase;
+    letter-spacing: 0px;
 }
-
+hr{
+    margin: 0;
+    border: 0;
+    border-top: 1px solid #ddd;
+    border-color: lightgrey;
+    margin-bottom: 10px;
+}
 .cart-item {
     display: flex;
     align-items: center;
@@ -83,29 +83,37 @@ h2 {
 
 .product-price {
     font-weight: bold;
-    color: #e53935; /* Red price color */
-    text-align: right; /* Align the price to the right */
-    margin-left: auto; /* Push price to the far right */
+    font-size: 12px;
+    color: #e53935;
+    text-align: right;
+    display: inline;
 }
 
 .product-quantity {
-    width: 50px; /* Slightly wider to accommodate numbers */
-    text-align: center;
-    border: 1px solid #ccc; /* Soft border */
-    padding: 5px;
-    border-radius: 5px; /* Rounded corners */
-    font-size: 14px; /* Match font size */
-    color: #333; /* Text color */
-    margin-right: 10px; /* Space before the remove button */
+    width: 29px;
+    text-align: end;
+    border: 1px solid #d1d1d1;
+    padding: 0px;
+    border-radius: 5px;
+    font-size: 10px;
+    color: #aeaeae;
+    margin-right: 0px;
+    display: inline;
+    position: fixed;
+    margin-left: 170px;
+    margin-top: 2px;
 }
 .remove-item {
     background-color: transparent;
     border: none;
-    color: #e53935; /* Red color */
+    color: #585858;
     cursor: pointer;
-    font-size: 18px;
+    font-size: 12px;
     margin-left: 10px;
     font-weight: bold;
+    position: fixed;
+    margin-left: 263px;
+    margin-top: -6px;
 }
 
 .remove-item:hover {
@@ -123,15 +131,18 @@ h2 {
 .request-order {
     width: 100%;
     padding: 15px;
-    background-color: #b26ba5; /* Button color to match the theme */
+    background-color: #bfa5cd;
     color: #fff;
     border: none;
     cursor: pointer;
-    border-radius: 5px; /* Rounded corners */
-    font-weight: bold;
-    font-size: 16px;
+    border-radius: 0px;
+    font-weight: lighter;
+    font-size: 15px;
     text-align: center;
-    text-transform: uppercase; /* Match text style */
+    text-transform: uppercase;
+    position: absolute;
+    bottom: 15px;
+    margin-left: -9px;
 }
 
 .request-order:hover {
