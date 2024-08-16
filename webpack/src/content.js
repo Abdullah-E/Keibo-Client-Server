@@ -10,6 +10,43 @@ function injectToolbar() {
     document.body.appendChild(toolbarDiv);
 
     // Access buttons after injection
+    let pageProduct;
+    let pagePrice;
+    let imageUrl;
+
+    console.log("loading product name...");
+
+    setTimeout(() => {
+        console.log("product name loaded");
+        pageProduct = document.querySelector('.ItemTitle--mainTitle--2OrrwrD.f-els-2');
+        pageProduct= pageProduct.textContent;
+        console.log("pageProduct: ", pageProduct);
+        pagePrice = document.querySelector('.SecurityPrice--text--3eB2Q7Q').textContent;
+        console.log("pagePrice: ", pagePrice);
+
+        const imageDiv = document.querySelector('.js-image-zoom__zoomed-image');
+    
+        if (imageDiv) {
+            // Get the background-image style property
+            const backgroundImage = window.getComputedStyle(imageDiv).backgroundImage;
+
+            // Extract the URL using a regular expression
+            imageUrl = backgroundImage.match(/url\("?(.+?)"?\)/)[1];
+            
+            console.log("Extracted Image URL: ", imageUrl);
+
+            // You can now use the imageUrl variable as needed
+        } else {
+            console.log("Image div not found.");
+        }
+    }, 2000);
+    
+    
+    // pageProduct = document.querySelector('.ItemTitle--mainTitle--2OrrwrD.f-els-2');
+    // console.log("pageProduct: ", pageProduct);
+    
+
+
     const addToCartButton = document.getElementById('add-to-cart');
     const viewCartButton = document.getElementById('view-cart');
   
@@ -26,17 +63,31 @@ function injectToolbar() {
             event.preventDefault();
             console.log('View Cart button clicked');
             toolbarDiv.style.display = 'none';
-            injectCart();
+            injectCart(pageProduct, pagePrice,imageUrl);
         });
     }
 }
 
-function injectCart() {
+
+function injectCart(pageProduct,pagePrice,imageUrl) {
     const cartDiv = document.createElement('div');
     cartDiv.id = 'cart';  // Add an ID to reference the cart div later
     cartDiv.innerHTML = cartHtml;
     document.body.appendChild(cartDiv);
 
+    const productName = cartDiv.querySelector('.product-name');
+    const productPrice = cartDiv.querySelector('.product-price');
+    const productImage = cartDiv.querySelector('.product-image');
+    if(productImage){
+        productImage.src = imageUrl;
+    }
+    if (productPrice) {
+        productPrice.textContent = "¥ "+pagePrice;  // Set the desired product price or any dynamic content
+    }
+    console.log("productName: ", productName);
+    if (productName) {
+        productName.textContent = pageProduct;  // Set the desired product name or any dynamic content
+    }
     // Access the close button after cart is injected
     const closeButton = document.getElementById('close-cart');
     
