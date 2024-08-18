@@ -5,132 +5,164 @@ import "../static/cart.css";
 import customHtml from "../static/custom.html";
 import "../static/custom.css";
 
+let cart = [];
+
 function injectToolbar() {
     const toolbarDiv = document.createElement('div');
-    toolbarDiv.id = 'toolbar';  // Add an ID to reference the toolbar later
+    toolbarDiv.id = 'toolbar';
     toolbarDiv.innerHTML = toolbarHtml;
     document.body.appendChild(toolbarDiv);
 
-    // Access buttons after injection
-    let pageProduct;
-    let pagePrice;
-    let imageUrl;
+    let pageProduct, pagePrice, imageUrl;
 
-    console.log("loading product name...");
+    console.log("Loading product information...");
 
     setTimeout(() => {
-        console.log("product name loaded");
         pageProduct = document.querySelector('.ItemTitle--mainTitle--2OrrwrD.f-els-2');
-        pageProduct= pageProduct.textContent;
+        pageProduct = pageProduct ? pageProduct.textContent : 'Unknown Product';
         console.log("pageProduct: ", pageProduct);
-        pagePrice = document.querySelector('.SecurityPrice--text--3eB2Q7Q').textContent;
+
+        pagePrice = document.querySelector('.SecurityPrice--text--3eB2Q7Q');
+        pagePrice = pagePrice ? pagePrice.textContent : 'Unknown Price';
         console.log("pagePrice: ", pagePrice);
 
         const imageDiv = document.querySelector('.js-image-zoom__zoomed-image');
-    
         if (imageDiv) {
-            // Get the background-image style property
             const backgroundImage = window.getComputedStyle(imageDiv).backgroundImage;
-
-            // Extract the URL using a regular expression
             imageUrl = backgroundImage.match(/url\("?(.+?)"?\)/)[1];
-            
             console.log("Extracted Image URL: ", imageUrl);
-
-            // You can now use the imageUrl variable as needed
         } else {
             console.log("Image div not found.");
+            imageUrl = 'default-image-url.jpg';
         }
+
+        setupEventListeners(pageProduct, pagePrice, imageUrl);
     }, 2000);
-    
-    
-    // pageProduct = document.querySelector('.ItemTitle--mainTitle--2OrrwrD.f-els-2');
-    // console.log("pageProduct: ", pageProduct);
-    
+}
 
-
+function setupEventListeners(pageProduct, pagePrice, imageUrl) {
     const addToCartButton = document.getElementById('add-to-cart');
     const viewCartButton = document.getElementById('view-cart');
-  
+
     if (addToCartButton) {
         addToCartButton.addEventListener('click', () => {
             console.log('Add to Cart button clicked');
-            injectProduct(pageProduct, pagePrice,imageUrl);
-            
+            addToCart(pageProduct, pagePrice, imageUrl);
         });
     }
-  
+
     if (viewCartButton) {
         viewCartButton.addEventListener('click', (event) => {
             event.preventDefault();
             console.log('View Cart button clicked');
-            toolbarDiv.style.display = 'none';
-            injectCart(pageProduct, pagePrice,imageUrl);
+            document.getElementById('toolbar').style.display = 'none';
+            injectCart();
         });
     }
 }
 
-function injectProduct(pageProduct, pagePrice,imageUrl) {
-    const productDiv = document.createElement('div');
-    productDiv.class = 'cart-item';  // Add an ID to reference the product div later
-    productDiv.innerHTML = cartHtml;
+function addToCart(product, price, imageUrl) {
+    const existingItem = cart.find(item => item.product === product);
+    if (existingItem) {
+        existingItem.quantity += 1;
+    } else {
+        cart.push({ product, price, imageUrl, quantity: 1 });
+    }
+    console.log('Product added to cart:', product);
+    console.log('Current cart:', cart);
 }
 
-function injectCart(pageProduct,pagePrice,imageUrl) {
-    const cartDiv = document.createElement('div');
-    cartDiv.id = 'cart';  // Add an ID to reference the cart div later
-    cartDiv.innerHTML = cartHtml;
-    document.body.appendChild(cartDiv);
+function injectCart() {
+    let existingCart = document.getElementById('cart-container');
+    if (existingCart) {
+        existingCart.style.display = 'block';
+        updateCartItems();
+    } else {
+        const cartDiv = document.createElement('div');
+        cartDiv.id = 'cart-container';
+        cartDiv.innerHTML = cartHtml;
+        document.body.appendChild(cartDiv);
+
+        updateCartItems();
+
+        const closeButton = document.getElementById('close-cart');
+        const orderButton = document.querySelector('.request-order');
+
+        if (closeButton) {
+            closeButton.addEventListener('click', (event) => {
+                event.preventDefault();
+                document.getElementById('toolbar').style.display = 'block';
+                cartDiv.style.display = 'none';
+            });
+        }
+
+        if (orderButton) {
+            orderButton.addEventListener('click', (event) => {
+                event.preventDefault();
+                injectCustomization();
+            });
+        }
+    }
+}
+
+function updateCartItems() {
+    console.log('Updating cart items...');
+    const cartItemsContainer = document.querySelector('.cart');
+    if (!cartItemsContainer) return;
+
+    // Remove existing cart items
+    const existingItems = cartItemsContainer.querySelectorAll('.cart-item');
+    existingItems.forEach(item => item.remove());
+
+    // Add new cart items
+    cart.forEach(item => {
+        const itemElement = document.createElement('div');
+        itemElement.className = 'cart-item';
+        itemElement.innerHTML = `
+            <img class="product-image" src="${item.imageUrl}" alt="Product Image">
+            <div class="item-details">
+                <p class="product-name">${item.product}</p>
+                <button class="remove-item" onclick="removeItem(this)">✕</button>
+                <p class="product-variants">Variants: </p>
+                <p class="product-price">${item.price}</p>
+                <input class="product-quantity" value="${item.quantity}" min="1" type="number">Quantity</input>
+            </div>
+        `;
+        cartItemsContainer.insertBefore(itemElement, cartItemsContainer.querySelector('.total'));
+        console.log('Item added to cart:', item.product);
+    });
+
+    updateTotalPrice();
+}
+
+function updateTotalPrice() {
+    const totalElement = document.querySelector('.total');
+    if (!totalElement) return;
+
+    const total = cart.reduce((sum, item) => {
+        const price = parseFloat(item.price.replace('¥', '').trim());
+        return sum + (price * item.quantity);
+    }, 0);
+
+    totalElement.textContent = `TOTAL: ¥ ${total.toFixed(2)}`;
+}
+
+function removeItem(button) {
+    const cartItem = button.closest('.cart-item');
+    const productName = cartItem.querySelector('.product-name').textContent;
     
-    //const productDiv = doc.querySelector('.cart-item'); 
-
-    const productName = cartDiv.querySelector('.product-name');
-    const productPrice = cartDiv.querySelector('.product-price');
-    const productImage = cartDiv.querySelector('.product-image');
-    if(productImage){
-        productImage.src = imageUrl;
-    }
-    if (productPrice) {
-        productPrice.textContent = "¥ "+pagePrice;  // Set the desired product price or any dynamic content
-    }
-    console.log("productName: ", productName);
-    if (productName) {
-        productName.textContent = pageProduct;  // Set the desired product name or any dynamic content
-    }
-    // Access the close button after cart is injected
-    const closeButton = document.getElementById('close-cart');
-    const orderButoon= document.querySelector('.request-order');
-    console.log("orderButoon: ", orderButoon);
-    
-    if (closeButton) {
-        console.log('Close button found');
-        closeButton.addEventListener('click', (event) => {
-            event.preventDefault();
-            console.log('Close Cart button clicked');
-            document.getElementById('toolbar').style.display = 'block';  // Show toolbar
-            cartDiv.style.display = 'none';  // Hide the cart
-        });
-    }
-    if (orderButoon) {
-        console.log('Order button found');
-        orderButoon.addEventListener('click', (event) => {
-            event.preventDefault();
-            console.log('Order Cart button clicked');
-            injectCustomization();
-        });
-    }
-
+    cart = cart.filter(item => item.product !== productName);
+    updateCartItems();
 }
 
-function injectCustomization(){
+function injectCustomization() {
     const customizationDiv = document.createElement('div');
-    customizationDiv.id = 'customization-container';  // Add an ID to reference the cart div later
+    customizationDiv.id = 'customization-container';
     customizationDiv.innerHTML = customHtml;
-    document.getElementById('cart').style.display = 'none';
+    document.getElementById('cart-container').style.display = 'none';
     document.body.appendChild(customizationDiv);
     console.log("customizationDiv: ", customizationDiv);
 }
-
 
 // Run the injection when the content script loads
 injectToolbar();
@@ -142,3 +174,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         sendResponse({success: true});
     }
 });
+
+// Make removeItem function globally available
+window.removeItem = removeItem;
