@@ -1,0 +1,92 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #fff;
+}
+
+#customization-container {
+    width: 50%;
+    max-width: 450px;
+    margin: 0 auto;
+    top: 0px;
+    position: fixed;
+    padding: 10px;  
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff;
+    border-radius: 0px;
+    z-index: 99999;
+    right: 0;
+    height: 84%;
+}
+
+#back-to-cart {
+    color: #7a7a7a;
+    font-size: 14px;
+}
+
+hr {
+    border: 0;
+    height: 1px;
+    background-color: #ccc;
+    margin: 20px 0;
+}
+
+#product-customization-title {
+    font-size: 20px;
+    color: #444;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+#moq-warning {
+    font-size: 12px;
+    color: #888;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+#upload-instructions {
+    font-size: 16px;
+    color: #444;
+    margin-bottom: 10px;
+}
+
+#upload-files {
+    display: block;
+    margin: 10px auto 20px;
+    width: 100%;
+}
+
+#delivery-label {
+    font-size: 14px;
+    color: #444;
+    margin-top: 20px;
+    display: block;
+}
+
+#delivery-mode {
+    display: block;
+    width: 100%;
+    margin: 10px 0;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+#continue-button {
+    display: block;
+    width: 100%;
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #bfa5cd;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+#continue-button:hover {
+    background-color: #6a5acd;
+}

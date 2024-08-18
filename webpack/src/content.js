@@ -2,6 +2,8 @@ import toolbarHtml from '../static/toolbar.html';
 import "../static/toolbar.css";
 import cartHtml from '../static/cart.html';
 import "../static/cart.css";
+import customHtml from "../static/custom.html";
+import "../static/custom.css";
 
 function injectToolbar() {
     const toolbarDiv = document.createElement('div');
@@ -53,8 +55,8 @@ function injectToolbar() {
     if (addToCartButton) {
         addToCartButton.addEventListener('click', () => {
             console.log('Add to Cart button clicked');
-            const itemTitle = document.querySelector('.ItemTitle--mainTitle--2OrrwrD.f-els-2');
-            // Handle the "Add to Cart" functionality here
+            injectProduct(pageProduct, pagePrice,imageUrl);
+            
         });
     }
   
@@ -68,12 +70,19 @@ function injectToolbar() {
     }
 }
 
+function injectProduct(pageProduct, pagePrice,imageUrl) {
+    const productDiv = document.createElement('div');
+    productDiv.class = 'cart-item';  // Add an ID to reference the product div later
+    productDiv.innerHTML = cartHtml;
+}
 
 function injectCart(pageProduct,pagePrice,imageUrl) {
     const cartDiv = document.createElement('div');
     cartDiv.id = 'cart';  // Add an ID to reference the cart div later
     cartDiv.innerHTML = cartHtml;
     document.body.appendChild(cartDiv);
+    
+    //const productDiv = doc.querySelector('.cart-item'); 
 
     const productName = cartDiv.querySelector('.product-name');
     const productPrice = cartDiv.querySelector('.product-price');
@@ -90,6 +99,8 @@ function injectCart(pageProduct,pagePrice,imageUrl) {
     }
     // Access the close button after cart is injected
     const closeButton = document.getElementById('close-cart');
+    const orderButoon= document.querySelector('.request-order');
+    console.log("orderButoon: ", orderButoon);
     
     if (closeButton) {
         console.log('Close button found');
@@ -100,7 +111,26 @@ function injectCart(pageProduct,pagePrice,imageUrl) {
             cartDiv.style.display = 'none';  // Hide the cart
         });
     }
+    if (orderButoon) {
+        console.log('Order button found');
+        orderButoon.addEventListener('click', (event) => {
+            event.preventDefault();
+            console.log('Order Cart button clicked');
+            injectCustomization();
+        });
+    }
+
 }
+
+function injectCustomization(){
+    const customizationDiv = document.createElement('div');
+    customizationDiv.id = 'customization-container';  // Add an ID to reference the cart div later
+    customizationDiv.innerHTML = customHtml;
+    document.getElementById('cart').style.display = 'none';
+    document.body.appendChild(customizationDiv);
+    console.log("customizationDiv: ", customizationDiv);
+}
+
 
 // Run the injection when the content script loads
 injectToolbar();
