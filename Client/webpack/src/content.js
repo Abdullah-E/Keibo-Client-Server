@@ -62,48 +62,61 @@ function setupEventListeners(pageProduct, pagePrice, imageUrl) {
 }
 
 function addToCart(product, price, imageUrl) {
-    const existingItem = cart.find(item => item.product === product);
-    if (existingItem) {
-        existingItem.quantity += 1;
-    } else {
-        cart.push({ product, price, imageUrl, quantity: 1 });
-    }
-    console.log('Product added to cart:', product);
-    console.log('Current cart:', cart);
+    const userEmail = 'john@example.com'; // Replace with the actual user's email
+    const item = { product, price, imageUrl, quantity: 1 };
+
+    chrome.runtime.sendMessage({ action: 'addToCart', userEmail, item }, response => {
+        if (response.success) {
+            console.log('Product added to cart:', product);
+        } else {
+            console.error('Failed to add product to cart:', response.error);
+        }
+    });
 }
 
 function injectCart() {
-    let existingCart = document.getElementById('cart-container');
-    if (existingCart) {
-        existingCart.style.display = 'block';
-        updateCartItems();
-    } else {
-        const cartDiv = document.createElement('div');
-        cartDiv.id = 'cart-container';
-        cartDiv.innerHTML = cartHtml;
-        document.body.appendChild(cartDiv);
+    const userEmail = 'john@example.com'; // Replace with the actual user's email
+    console.log('Retrieving cart items for user:', userEmail);
+    chrome.runtime.sendMessage({ action: 'getCart', userEmail }, response => {
+        if (response.success) {
+            cart = response.items;
+            console.log('Cart items:', cart);
+            let existingCart = document.getElementById('cart-container');
+            if (existingCart) {
+                existingCart.style.display = 'block';
+                updateCartItems();
+            } else {
+                const cartDiv = document.createElement('div');
+                cartDiv.id = 'cart-container';
+                cartDiv.innerHTML = cartHtml;
+                document.body.appendChild(cartDiv);
 
-        updateCartItems();
+                updateCartItems();
 
-        const closeButton = document.getElementById('close-cart');
-        const orderButton = document.querySelector('.request-order');
+                const closeButton = document.getElementById('close-cart');
+                const orderButton = document.querySelector('.request-order');
 
-        if (closeButton) {
-            closeButton.addEventListener('click', (event) => {
-                event.preventDefault();
-                document.getElementById('toolbar').style.display = 'block';
-                cartDiv.style.display = 'none';
-            });
+                if (closeButton) {
+                    closeButton.addEventListener('click', (event) => {
+                        event.preventDefault();
+                        document.getElementById('toolbar').style.display = 'block';
+                        cartDiv.style.display = 'none';
+                    });
+                }
+
+                if (orderButton) {
+                    orderButton.addEventListener('click', (event) => {
+                        event.preventDefault();
+                        injectCustomization();
+                    });
+                }
+            }
+        } else {
+            console.error('Failed to retrieve cart:', response.error);
         }
-
-        if (orderButton) {
-            orderButton.addEventListener('click', (event) => {
-                event.preventDefault();
-                injectCustomization();
-            });
-        }
-    }
+    });
 }
+
 
 function updateCartItems() {
     console.log('Updating cart items...');

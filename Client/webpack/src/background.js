@@ -180,9 +180,7 @@ const CartDB = {
   }
 };
 
-// Example usage
-
-// Sign up
+// Signup
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'signup') {
     console.log('Signup request received:', request.email);
@@ -206,7 +204,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 });
 
-// Log in
+// Login
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'login') {
     console.log('Login request received:', request.email);
@@ -239,7 +237,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         return CartDB.update(request.userEmail, items);
       })
       .then(() => {
-        console.log('Item added to cart successfully');
+        console.log('Item added to cart successfully', request.item.product);
         sendResponse({ success: true });
       })
       .catch(error => {
@@ -257,7 +255,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     console.log('Get cart request received:', request.userEmail);
     CartDB.get(request.userEmail)
       .then(items => {
-        console.log('Cart retrieved successfully');
+        console.log('Cart retrieved successfully', items);
         sendResponse({ success: true, items });
       })
       .catch(error => {
@@ -268,6 +266,3 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     return true; // Indicates that the response is sent asynchronously
   }
 });
-
-// Log a message when the background script loads
-console.log('Background script loaded. Sample users available for testing:', sampleUsers.map(user => user.email));
