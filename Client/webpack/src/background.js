@@ -1,5 +1,3 @@
-// File: background.js
-
 // Database name and version
 console.log('Background script loaded.');
 const dbName = 'ExtensionDB';

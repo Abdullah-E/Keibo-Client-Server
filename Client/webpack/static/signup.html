@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Sign Up</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -20,7 +20,7 @@
             border-radius: 0px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             width: 280px;
-            height: 350px;
+            height: 500px;
         }
         .logo {
             background-color: #c15bb1;
@@ -54,34 +54,9 @@
             cursor: pointer;
             font-size: 16px;
         }
-        .forgot-password {
-            margin-top: 15px;
-            font-size: 14px;
-            color: #635bc1;
-            text-decoration: none;
-            display: block;
-            text-align: center;
-        }
-        .create-account {
-            background-color: #c15bb1;
-            color: white;
-            border: none;
-            padding: 10px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            display: block;
-            margin-top: 15px;
-            text-decoration: none;
-            text-align: center;
-            position: absolute;
-            bottom: 6%;
-            width: 80%;
-            margin: auto;
-        }
         .password-field {
             position: relative;
-            color: rgb(236, 228, 238);
+            display :grid;
         }
         .password-toggle {
             position: absolute;
@@ -91,11 +66,12 @@
             cursor: pointer;
             color: #888;
         }
-        .line{
-            border: 0px;
-            height: 1px;
-            background: #c1c1c1;
-            margin: 30px 0;
+        .terms {
+            font-size: 8px;
+            color: #666;
+            margin-top: 15px;
+            margin-bottom: 15px;
+            text-align: center;
         }
     </style>
 </head>
@@ -103,18 +79,26 @@
     <div class="container">
         <img src="./KieboLogo.png" alt="" class="logo">
         <form>
-            <label for="Email"> Email </label>
-            <input type="email" placeholder="Email" value="example@example.com">
-            <label for="password">Password</label>
+            <label for="first-name">First Name</label>
+            <input type="text" id="first-name">
+            <label for="last-name">Last Name</label>
+            <input type="text" id="last-name">
+            <label for="email">Email</label>
+            <input type="email" id="email">
             <div class="password-field">
-                <input type="password" placeholder="Password" value="Password" id="password">
+                <label for="password">Password</label>
+                <input type="password" id="password">
                 <span class="password-toggle">👁️</span>
             </div>
-            <button type="submit">Continue</button>
+            <div class="password-field">
+                <label for="confirm-password">Confirm Password</label>
+                <input type="password" id="confirm-password">
+                <span class="password-toggle">👁️</span>
+            </div>
+            <p class="terms">✔️ Password must be at least 8 characters, alphanumeric, lowercase, and at least 1 special character</p>
+            <button type="submit">Next</button>
         </form>
-        <a href="#" class="forgot-password">Forgot Password?</a>
-        <hr class="line">
-        <a href="./signup.html" class="create-account">Create New Account</a>
+        
     </div>
 </body>
 </html>

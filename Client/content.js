@@ -1,7 +1,5 @@
 // content.js
 
-
-
 (function() {
     // Create the floating div
     const floatingDiv = document.createElement('div');
