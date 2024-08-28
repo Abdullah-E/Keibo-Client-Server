@@ -95,6 +95,7 @@ function injectCart() {
 
                 const closeButton = document.getElementById('close-cart');
                 const orderButton = document.querySelector('.request-order');
+                const deleteItem= document.querySelector('.remove-item');
 
                 if (closeButton) {
                     closeButton.addEventListener('click', (event) => {
@@ -108,6 +109,13 @@ function injectCart() {
                     orderButton.addEventListener('click', (event) => {
                         event.preventDefault();
                         injectCustomization();
+                    });
+                }
+                if(deleteItem){
+                    console.log("deleteItem: ", deleteItem);
+                    deleteItem.addEventListener('click', (event) => {
+                        event.preventDefault();
+                        removeItem();
                     });
                 }
             }

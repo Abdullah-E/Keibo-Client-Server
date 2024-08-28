@@ -14,43 +14,42 @@ const sampleUsers = [
 // Open the database
 function openDB() {
   return new Promise((resolve, reject) => {
-    console.log('Opening database...');
-    const request = indexedDB.open(dbName, dbVersion);
+      console.log('Opening database...');
+      const request = indexedDB.open(dbName, dbVersion);
 
-    request.onerror = event => {
-      console.error('Error opening database:', event.target.error);
-      reject('Error opening database');
-    };
+      request.onerror = event => {
+          console.error('Error opening database:', event.target.error);
+          reject('Error opening database');
+      };
 
-    request.onsuccess = event => {
-      console.log('Database opened successfully');
-      resolve(event.target.result);
-    };
+      request.onsuccess = event => {
+          console.log('Database opened successfully');
+          resolve(event.target.result);
+      };
 
-    request.onupgradeneeded = event => {
-      console.log('Upgrading database...');
-      const db = event.target.result;
+      request.onupgradeneeded = event => {
+          console.log('Upgrading database...');
+          const db = event.target.result;
 
-      // Create an object store for users
-      if (!db.objectStoreNames.contains('users')) {
-        console.log('Creating users object store');
-        const userStore = db.createObjectStore('users', { keyPath: 'email' });
-        userStore.createIndex('name', 'name', { unique: false });
+          // Create an object store for users
+          if (!db.objectStoreNames.contains('users')) {
+              console.log('Creating users object store');
+              const userStore = db.createObjectStore('users', { keyPath: 'email' });
+              userStore.createIndex('name', 'name', { unique: false });
 
-        // Add sample users
-        sampleUsers.forEach(user => {
-          userStore.add(user);
-        });
-        console.log('Sample users added');
-      }
+              // Add sample users
+              sampleUsers.forEach(user => {
+                  userStore.add(user);
+              });
+              console.log('Sample users added');
+          }
 
-      // Create an object store for cart
-      if (!db.objectStoreNames.contains('cart')) {
-        console.log('Creating cart object store');
-        const cartStore = db.createObjectStore('cart', { keyPath: 'userEmail' });
-      }
-    };
-    console.log('Database opened successfully', request.result);
+          // Create an object store for cart
+          if (!db.objectStoreNames.contains('cart')) {
+              console.log('Creating cart object store');
+              db.createObjectStore('cart', { keyPath: 'userEmail' });
+          }
+      };
   });
 }
 
@@ -267,14 +266,16 @@ function handleAddToCart(request, sendResponse) {
 
 // Handle get cart
 function handleGetCart(request, sendResponse) {
-  console.log('Get cart request received:', request.userEmail);
-  CartDB.get(request.userEmail)
-    .then(items => {
-      console.log('Cart retrieved successfully', items);
-      sendResponse({ success: true, items });
-    })
-    .catch(error => {
-      console.error('Error getting cart:', error);
-      sendResponse({ success: false, error: error.toString() });
-    });
-}
+  if (request.action === 'getCart') {
+    console.log('Get cart request received:', request.userEmail);
+    CartDB.get(request.userEmail)
+      .then(items => {
+        console.log('Cart retrieved successfully', items);
+        sendResponse({ success: true, items });
+      })
+      .catch(error => {
+        console.error('Error getting cart:', error);
+        sendResponse({ success: false, error });
+      });
+    return true;
+    }}
