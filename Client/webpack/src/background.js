@@ -7,7 +7,8 @@ const dbVersion = 1;
 const sampleUsers = [
   { email: 'john@example.com', name: 'John Doe', password: 'password123' },
   { email: 'jane@example.com', name: 'Jane Smith', password: 'securepass' },
-  { email: 'bob@example.com', name: 'Bob Johnson', password: 'bobpass123' }
+  { email: 'bob@example.com', name: 'Bob Johnson', password: 'bobpass123' },
+  {email: 'sal@keibo.com', name: 'Salar', password: '123'}
 ];
 
 // Open the database
@@ -49,6 +50,7 @@ function openDB() {
         const cartStore = db.createObjectStore('cart', { keyPath: 'userEmail' });
       }
     };
+    console.log('Database opened successfully', request.result);
   });
 }
 
@@ -178,89 +180,101 @@ const CartDB = {
   }
 };
 
-// Signup
+// Message listener for various actions
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === 'signup') {
-    console.log('Signup request received:', request.email);
-    const user = {
-      email: request.email,
-      name: request.name,
-      password: request.password // Note: In a real application, never store passwords in plain text
-    };
+  console.log('Message received:', request.action);
 
-    UserDB.add(user)
-      .then(() => {
-        console.log('Signup successful:', user.email);
-        sendResponse({ success: true });
-      })
-      .catch(error => {
-        console.error('Signup failed:', error);
-        sendResponse({ success: false, error });
-      });
-
-    return true; // Indicates that the response is sent asynchronously
+  switch (request.action) {
+    case 'signup':
+      console.log("signup req")
+      handleSignup(request, sendResponse);
+      break;
+    case 'login':
+      handleLogin(request, sendResponse);
+      break;
+    case 'addToCart':
+      handleAddToCart(request, sendResponse);
+      break;
+    case 'getCart':
+      handleGetCart(request, sendResponse);
+      break;
+    default:
+      console.error('Unknown action:', request.action);
+      sendResponse({ success: false, error: 'Unknown action' });
   }
+
+  return true; // Indicates that the response is sent asynchronously
 });
 
-// Login
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === 'login') {
-    console.log('Login request received:', request.email);
-    UserDB.get(request.email)
-      .then(user => {
-        if (user && user.password === request.password) { // Note: In a real application, use proper password hashing and comparison
-          console.log('Login successful:', user.email);
-          sendResponse({ success: true, user: { email: user.email, name: user.name } });
-        } else {
-          console.log('Login failed: Invalid credentials');
-          sendResponse({ success: false, error: 'Invalid credentials' });
-        }
-      })
-      .catch(error => {
-        console.error('Login error:', error);
-        sendResponse({ success: false, error });
-      });
+// Handle signup
+function handleSignup(request, sendResponse) {
+  console.log('Signup request received:', request.email);
+  const user = {
+    email: request.email,
+    name: request.name,
+    password: request.password // Note: In a real application, never store passwords in plain text
+  };
 
-    return true; // Indicates that the response is sent asynchronously
-  }
-});
+  UserDB.add(user)
+    .then(() => {
+      console.log('Signup successful:', user.email);
+      sendResponse({ success: true });
+    })
+    .catch(error => {
+      console.error('Signup failed:', error);
+      sendResponse({ success: false, error: error.toString() });
+    });
+}
 
-// Add to cart
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === 'addToCart') {
-    console.log('Add to cart request received:', request.userEmail);
-    CartDB.get(request.userEmail)
-      .then(items => {
-        items.push(request.item);
-        return CartDB.update(request.userEmail, items);
-      })
-      .then(() => {
-        console.log('Item added to cart successfully', request.item.product);
-        sendResponse({ success: true });
-      })
-      .catch(error => {
-        console.error('Error adding item to cart:', error);
-        sendResponse({ success: false, error });
-      });
+// Handle login
+function handleLogin(request, sendResponse) {
+  console.log('Login request received:', request.email);
+  UserDB.get(request.email)
+    .then(user => {
+      if (user && user.password === request.password) { // Note: In a real application, use proper password hashing and comparison
+        console.log('Login successful:', user.email);
+        chrome.storage.local.set({isLoggedIn: true, user: {email: user.email, name: user.name}}, () => {
+          sendResponse({success: true, user: {email: user.email, name: user.name}});
+        });
+      } else {
+        console.log('Login failed: Invalid credentials');
+        sendResponse({success: false, error: 'Invalid credentials'});
+      }
+    })
+    .catch(error => {
+      console.error('Login error:', error);
+      sendResponse({success: false, error: 'An error occurred'});
+    });
+}
 
-    return true; // Indicates that the response is sent asynchronously
-  }
-});
+// Handle add to cart
+function handleAddToCart(request, sendResponse) {
+  console.log('Add to cart request received:', request.userEmail);
+  CartDB.get(request.userEmail)
+    .then(items => {
+      items.push(request.item);
+      return CartDB.update(request.userEmail, items);
+    })
+    .then(() => {
+      console.log('Item added to cart successfully', request.item.product);
+      sendResponse({ success: true });
+    })
+    .catch(error => {
+      console.error('Error adding item to cart:', error);
+      sendResponse({ success: false, error: error.toString() });
+    });
+}
 
-// Get cart
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === 'getCart') {
-    console.log('Get cart request received:', request.userEmail);
-    CartDB.get(request.userEmail)
-      .then(items => {
-        console.log('Cart retrieved successfully', items);
-        sendResponse({ success: true, items });
-      })
-      .catch(error => {
-        console.error('Error getting cart:', error);
-        sendResponse({ success: false, error });
-      });
-
-    return true; // Indicates that the response is sent asynchronously
-  }
-});
+// Handle get cart
+function handleGetCart(request, sendResponse) {
+  console.log('Get cart request received:', request.userEmail);
+  CartDB.get(request.userEmail)
+    .then(items => {
+      console.log('Cart retrieved successfully', items);
+      sendResponse({ success: true, items });
+    })
+    .catch(error => {
+      console.error('Error getting cart:', error);
+      sendResponse({ success: false, error: error.toString() });
+    });
+}

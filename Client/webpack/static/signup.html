@@ -45,7 +45,7 @@
             border-radius: 20px;
             background-color: rgb(236, 228, 238);
         }
-        button {
+        a, button {
             background-color: #c15bb1;
             color: white;
             border: none;
@@ -53,10 +53,12 @@
             border-radius: 4px;
             cursor: pointer;
             font-size: 16px;
+            text-align: center;
+            text-decoration: none;
         }
         .password-field {
             position: relative;
-            display :grid;
+            display: grid;
         }
         .password-toggle {
             position: absolute;
@@ -78,27 +80,28 @@
 <body>
     <div class="container">
         <img src="./KieboLogo.png" alt="" class="logo">
-        <form>
+        <form id="signup-form">
             <label for="first-name">First Name</label>
-            <input type="text" id="first-name">
+            <input type="text" id="first-name" required>
             <label for="last-name">Last Name</label>
-            <input type="text" id="last-name">
+            <input type="text" id="last-name" required>
             <label for="email">Email</label>
-            <input type="email" id="email">
+            <input type="email" id="email" required>
             <div class="password-field">
                 <label for="password">Password</label>
-                <input type="password" id="password">
-                <span class="password-toggle">👁️</span>
+                <input type="password" id="password" required>
+                <span class="password-toggle" id="togglePassword">👁️</span>
             </div>
             <div class="password-field">
                 <label for="confirm-password">Confirm Password</label>
-                <input type="password" id="confirm-password">
-                <span class="password-toggle">👁️</span>
+                <input type="password" id="confirm-password" required>
+                <span class="password-toggle" id="toggleConfirmPassword">👁️</span>
             </div>
             <p class="terms">✔️ Password must be at least 8 characters, alphanumeric, lowercase, and at least 1 special character</p>
             <button type="submit">Next</button>
         </form>
-        
     </div>
+
+    <script src="./signup.js"></script>
 </body>
 </html>

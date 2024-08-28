@@ -102,13 +102,13 @@
 <body>
     <div class="container">
         <img src="./KieboLogo.png" alt="" class="logo">
-        <form>
-            <label for="Email"> Email </label>
-            <input type="email" placeholder="Email" value="example@example.com">
+        <form id="loginForm">
+            <label for="email">Email</label>
+            <input type="email" placeholder="Email" id="email" value="example@example.com">
             <label for="password">Password</label>
             <div class="password-field">
-                <input type="password" placeholder="Password" value="Password" id="password">
-                <span class="password-toggle">👁️</span>
+                <input type="password" placeholder="Password" id="password" value="Password">
+                <span class="password-toggle" id="passwordToggle">👁️</span>
             </div>
             <button type="submit">Continue</button>
         </form>
@@ -116,5 +116,8 @@
         <hr class="line">
         <a href="./signup.html" class="create-account">Create New Account</a>
     </div>
+    
+    <script src="./popup.js"></script>
+
 </body>
 </html>
