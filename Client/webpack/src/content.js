@@ -1,45 +1,69 @@
+// Import statements
 import toolbarHtml from '../static/toolbar.html';
 import "../static/toolbar.css";
 import cartHtml from '../static/cart.html';
 import "../static/cart.css";
 import customHtml from "../static/custom.html";
 import "../static/custom.css";
+import logo from "../KieboLogo.png";
 
+// Initialize cart array
 let cart = [];
 
+// Function to inject toolbar
 function injectToolbar() {
     const toolbarDiv = document.createElement('div');
     toolbarDiv.id = 'toolbar';
     toolbarDiv.innerHTML = toolbarHtml;
     document.body.appendChild(toolbarDiv);
 
+    const logoLoc = document.querySelector('.logo');
+    if (logoLoc) {
+        logoLoc.src = logo;
+        console.log("Logo element:", logoLoc);
+    } else {
+        console.error("Logo element not found");
+    }
+
     let pageProduct, pagePrice, imageUrl;
 
     console.log("Loading product information...");
 
-    setTimeout(() => {
-        pageProduct = document.querySelector('.ItemTitle--mainTitle--2OrrwrD.f-els-2');
-        pageProduct = pageProduct ? pageProduct.textContent : 'Unknown Product';
-        console.log("pageProduct: ", pageProduct);
+    // Use MutationObserver instead of setTimeout
+    const observer = new MutationObserver((mutations, obs) => {
+        const head = document.querySelector('.mainTitle--O1XCl8e2.f-els-2');
+        if (head) {
+            obs.disconnect(); // Stop observing once element is found
+            pageProduct = head.textContent;
+            console.log("Page product:", pageProduct);
 
-        pagePrice = document.querySelector('.SecurityPrice--text--3eB2Q7Q');
-        pagePrice = pagePrice ? pagePrice.textContent : 'Unknown Price';
-        console.log("pagePrice: ", pagePrice);
+            pagePrice = getProductPrice();
+            console.log("Page price:", pagePrice);
 
-        const imageDiv = document.querySelector('.js-image-zoom__zoomed-image');
-        if (imageDiv) {
-            const backgroundImage = window.getComputedStyle(imageDiv).backgroundImage;
-            imageUrl = backgroundImage.match(/url\("?(.+?)"?\)/)[1];
-            console.log("Extracted Image URL: ", imageUrl);
-        } else {
-            console.log("Image div not found.");
-            imageUrl = 'default-image-url.jpg';
+            const imageDiv = document.querySelector('.mainPic--zxTtQs0P');
+            console.log("Image div:", imageDiv);
+            const imageUrl = imageDiv.src;
+            console.log("Image URL:", imageUrl);
+            if (imageDiv) {
+                // const backgroundImage = window.getComputedStyle(imageDiv).backgroundImage;
+                // imageUrl = backgroundImage.match(/url\("?(.+?)"?\)/)[1];
+                console.log("Extracted Image URL:", imageUrl);
+            } else {
+                console.log("Image div not found.");
+                imageUrl = 'default-image-url.jpg';
+            }
+
+            setupEventListeners(pageProduct, pagePrice, imageUrl);
         }
+    });
 
-        setupEventListeners(pageProduct, pagePrice, imageUrl);
-    }, 2000);
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true
+    });
 }
 
+// Function to set up event listeners
 function setupEventListeners(pageProduct, pagePrice, imageUrl) {
     const addToCartButton = document.getElementById('add-to-cart');
     const viewCartButton = document.getElementById('view-cart');
@@ -49,6 +73,8 @@ function setupEventListeners(pageProduct, pagePrice, imageUrl) {
             console.log('Add to Cart button clicked');
             addToCart(pageProduct, pagePrice, imageUrl);
         });
+    } else {
+        console.error('Add to Cart button not found');
     }
 
     if (viewCartButton) {
@@ -58,11 +84,14 @@ function setupEventListeners(pageProduct, pagePrice, imageUrl) {
             document.getElementById('toolbar').style.display = 'none';
             injectCart();
         });
+    } else {
+        console.error('View Cart button not found');
     }
 }
 
+// Function to add item to cart
 function addToCart(product, price, imageUrl) {
-    const userEmail = 'john@example.com'; // Replace with the actual user's email
+    const userEmail = 'sal@keibo.com'; // Replace with actual user's email or fetch dynamically
     const item = { product, price, imageUrl, quantity: 1 };
 
     chrome.runtime.sendMessage({ action: 'addToCart', userEmail, item }, response => {
@@ -74,8 +103,50 @@ function addToCart(product, price, imageUrl) {
     });
 }
 
+// Function to get product title
+function getProductTitle() {
+    const selectors = [
+        '.ItemTitle--mainTitle--2OrrwrD.f-els-2',
+        '.mainTitle--O1XCl8e2.f-els-2',
+        'h1.title',
+        '#product-name',
+        '[itemprop="name"]'
+    ];
+
+    for (let selector of selectors) {
+        const element = document.querySelector(selector);
+        if (element) {
+            console.log(`Product title found with selector: ${selector}`);
+            return element.textContent.trim();
+        }
+    }
+
+    console.log('Product title not found with any selector');
+    return 'Unknown Product';
+}
+
+// Function to get product price
+function getProductPrice() {
+    const selectors = [
+        '.SecurityPrice--text--3eB2Q7Q',
+        '.text--Mdqy24Ex'
+    ];
+
+    for (let selector of selectors) {
+        const element = document.querySelector(selector);
+        if (element && element.textContent.trim()) {
+            console.log(`Product price found with selector: ${selector}`);
+            return element.textContent.trim();
+        }
+    }
+
+    console.log('Product price not found with any selector');
+    return 'Unknown Price';
+}
+
+// Function to inject cart
 function injectCart() {
-    const userEmail = 'john@example.com'; // Replace with the actual user's email
+    const userEmail = 'sal@keibo.com'; // Replace with actual user's email or fetch dynamically
     console.log('Retrieving cart items for user:', userEmail);
     chrome.runtime.sendMessage({ action: 'getCart', userEmail }, response => {
         if (response.success) {
@@ -95,14 +166,16 @@ function injectCart() {
 
                 const closeButton = document.getElementById('close-cart');
                 const orderButton = document.querySelector('.request-order');
-                const deleteItem= document.querySelector('.remove-item');
 
                 if (closeButton) {
                     closeButton.addEventListener('click', (event) => {
                         event.preventDefault();
                         document.getElementById('toolbar').style.display = 'block';
                         cartDiv.style.display = 'none';
+                        injectToolbar();    
                     });
+                } else {
+                    console.error('Close cart button not found');
                 }
 
                 if (orderButton) {
@@ -110,13 +183,8 @@ function injectCart() {
                         event.preventDefault();
                         injectCustomization();
                     });
-                }
-                if(deleteItem){
-                    console.log("deleteItem: ", deleteItem);
-                    deleteItem.addEventListener('click', (event) => {
-                        event.preventDefault();
-                        removeItem();
-                    });
+                } else {
+                    console.error('Request order button not found');
                 }
             }
         } else {
@@ -125,11 +193,14 @@ function injectCart() {
     });
 }
 
-
+// Function to update cart items
 function updateCartItems() {
     console.log('Updating cart items...');
     const cartItemsContainer = document.querySelector('.cart');
-    if (!cartItemsContainer) return;
+    if (!cartItemsContainer) {
+        console.error('Cart container not found');
+        return;
+    }
 
     // Remove existing cart items
     const existingItems = cartItemsContainer.querySelectorAll('.cart-item');
@@ -137,18 +208,32 @@ function updateCartItems() {
 
     // Add new cart items
     cart.forEach(item => {
+        if (!item || typeof item !== 'object') {
+            console.error('Invalid cart item:', item);
+            return;
+        }
+
         const itemElement = document.createElement('div');
         itemElement.className = 'cart-item';
         itemElement.innerHTML = `
-            <img class="product-image" src="${item.imageUrl}" alt="Product Image">
+            <img class="product-image" src="${item.imageUrl || 'default-image.jpg'}" alt="Product Image">
             <div class="item-details">
-                <p class="product-name">${item.product}</p>
-                <button class="remove-item" onclick="removeItem(this)">✕</button>
+                <p class="product-name">${item.product || 'Unknown Product'}</p>
+                <button class="remove-item">✕</button>
                 <p class="product-variants">Variants: </p>
-                <p class="product-price">${item.price}</p>
-                <input class="product-quantity" value="${item.quantity}" min="1" type="number">Quantity</input>
+                <p class="product-price">${item.price || 'N/A'}</p>
+                <input class="product-quantity" value="${item.quantity || 1}" min="1" type="number">
+                <label>Quantity</label>
             </div>
         `;
+        console.log
+        const removeButton = itemElement.querySelector('.remove-item');
+        if (removeButton) {
+            removeButton.addEventListener('click', function() {
+                removeItem(item.product);
+            });
+        }
+
         cartItemsContainer.insertBefore(itemElement, cartItemsContainer.querySelector('.total'));
         console.log('Item added to cart:', item.product);
     });
@@ -156,33 +241,41 @@ function updateCartItems() {
     updateTotalPrice();
 }
 
+// Function to update total price
 function updateTotalPrice() {
     const totalElement = document.querySelector('.total');
-    if (!totalElement) return;
+    if (!totalElement) {
+        console.error('Total element not found');
+        return;
+    }
 
     const total = cart.reduce((sum, item) => {
-        const price = parseFloat(item.price.replace('¥', '').trim());
+        const price = parseFloat(item.price.replace(/[^\d.]/g, ''));
         return sum + (price * item.quantity);
     }, 0);
 
     totalElement.textContent = `TOTAL: ¥ ${total.toFixed(2)}`;
 }
 
-function removeItem(button) {
-    const cartItem = button.closest('.cart-item');
-    const productName = cartItem.querySelector('.product-name').textContent;
-    
+// Function to remove item from cart
+function removeItem(productName) {
+    if (!productName) {
+        console.error('Product name not provided');
+        return;
+    }
+
     cart = cart.filter(item => item.product !== productName);
     updateCartItems();
 }
 
+// Function to inject customization
 function injectCustomization() {
     const customizationDiv = document.createElement('div');
     customizationDiv.id = 'customization-container';
     customizationDiv.innerHTML = customHtml;
     document.getElementById('cart-container').style.display = 'none';
     document.body.appendChild(customizationDiv);
-    console.log("customizationDiv: ", customizationDiv);
+    console.log("Customization div:", customizationDiv);
 }
 
 // Run the injection when the content script loads
