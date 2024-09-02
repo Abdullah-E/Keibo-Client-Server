@@ -185,7 +185,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
   switch (request.action) {
     case 'signup':
-      console.log("signup req")
       handleSignup(request, sendResponse);
       break;
     case 'login':
@@ -193,9 +192,15 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       break;
     case 'addToCart':
       handleAddToCart(request, sendResponse);
+      console.log('add to cart request received:', request.userEmail);
+      break;
+    case 'removeFromCart':
+      handleRemoveFromCart(request, sendResponse);
+      console.log('remove from cart request received:', request.userEmail);
       break;
     case 'getCart':
       handleGetCart(request, sendResponse);
+      console.log('get cart request received:', request.userEmail);
       break;
     default:
       console.error('Unknown action:', request.action);
@@ -251,15 +256,40 @@ function handleAddToCart(request, sendResponse) {
   console.log('Add to cart request received:', request.userEmail);
   CartDB.get(request.userEmail)
     .then(items => {
-      items.push(request.item);
+      const existingItemIndex = items.findIndex(item => item.product === request.item.product);
+      if (existingItemIndex !== -1) {
+        // Update quantity if item already exists
+        items[existingItemIndex].quantity += request.item.quantity;
+      } else {
+        // Add new item if it doesn't exist
+        items.push(request.item);
+      }
       return CartDB.update(request.userEmail, items);
     })
     .then(() => {
-      console.log('Item added to cart successfully', request.item.product);
+      console.log('Cart updated successfully', request.item.product);
       sendResponse({ success: true });
     })
     .catch(error => {
-      console.error('Error adding item to cart:', error);
+      console.error('Error updating cart:', error);
+      sendResponse({ success: false, error: error.toString() });
+    });
+}
+
+// Handle remove from cart (new function)
+function handleRemoveFromCart(request, sendResponse) {
+  console.log('Remove from cart request received:', request.userEmail, request.productName);
+  CartDB.get(request.userEmail)
+    .then(items => {
+      const updatedItems = items.filter(item => item.product !== request.productName);
+      return CartDB.update(request.userEmail, updatedItems);
+    })
+    .then(() => {
+      console.log('Item removed from cart successfully', request.productName);
+      sendResponse({ success: true });
+    })
+    .catch(error => {
+      console.error('Error removing item from cart:', error);
       sendResponse({ success: false, error: error.toString() });
     });
 }

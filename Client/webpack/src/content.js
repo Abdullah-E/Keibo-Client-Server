@@ -6,6 +6,8 @@ import "../static/cart.css";
 import customHtml from "../static/custom.html";
 import "../static/custom.css";
 import logo from "../KieboLogo.png";
+import infoHtml from "../static/info.html";
+import "../static/info.css";
 
 // Initialize cart array
 let cart = [];
@@ -92,15 +94,31 @@ function setupEventListeners(pageProduct, pagePrice, imageUrl) {
 // Function to add item to cart
 function addToCart(product, price, imageUrl) {
     const userEmail = 'sal@keibo.com'; // Replace with actual user's email or fetch dynamically
-    const item = { product, price, imageUrl, quantity: 1 };
+    let item;
+    let existingItem = cart.find(item => item.product === product);
 
+    if (existingItem) {
+        // Update quantity if product already exists in the cart
+        existingItem.quantity += 1;
+        item = existingItem;
+        console.log('Product quantity updated:', product);
+    } else {
+        // Add new product to the cart
+        item = { product, price, imageUrl, quantity: 1 };
+        cart.push(item);
+        console.log('New product added to cart:', product);
+    }
+
+    // Send updated cart to background script
     chrome.runtime.sendMessage({ action: 'addToCart', userEmail, item }, response => {
         if (response.success) {
-            console.log('Product added to cart:', product);
+            console.log('Cart updated successfully:', product);
         } else {
-            console.error('Failed to add product to cart:', response.error);
+            console.error('Failed to update cart:', response.error);
         }
     });
+
+    updateCartItems();
 }
 
 // Function to get product title
@@ -237,7 +255,7 @@ function updateCartItems() {
         cartItemsContainer.insertBefore(itemElement, cartItemsContainer.querySelector('.total'));
         console.log('Item added to cart:', item.product);
     });
-
+    
     updateTotalPrice();
 }
 
@@ -263,9 +281,16 @@ function removeItem(productName) {
         console.error('Product name not provided');
         return;
     }
-
-    cart = cart.filter(item => item.product !== productName);
-    updateCartItems();
+    const userEmail = 'sal@keibo.com'; // Replace with actual user's email or fetch dynamically
+    chrome.runtime.sendMessage({ action: 'removeFromCart', userEmail, productName }, response => {
+        if (response.success) {
+            console.log('Product removed from cart:', productName);
+            cart = cart.filter(item => item.product !== productName);
+            updateCartItems();
+        } else {
+            console.error('Failed to remove product from cart:', response.error);
+        }
+    });
 }
 
 // Function to inject customization
@@ -276,8 +301,40 @@ function injectCustomization() {
     document.getElementById('cart-container').style.display = 'none';
     document.body.appendChild(customizationDiv);
     console.log("Customization div:", customizationDiv);
+    const requestButton= document.getElementById('continue-button')
+    console.log("Request button:", requestButton);
+    if (requestButton) {
+        requestButton.addEventListener('click', (event) => {
+            console.log('Request button clicked');  
+            event.preventDefault();
+            injectInfo();
+        });
+    } else {
+        console.error('Request button not found');
+    }
 }
 
+// Function to inject info
+function injectInfo() {
+    const infoDiv = document.createElement('div');
+    infoDiv.id = 'info';
+    infoDiv.innerHTML = infoHtml;
+    infoDiv.style.display = 'block'; // Add this line to make the div visible
+    document.body.appendChild(infoDiv);
+    console.log("Info div:", infoDiv);
+    document.getElementById('customization-container').style.display = 'none';
+
+    const submitButton = document.querySelector('#info #submit-btn');
+    if (submitButton) {
+        submitButton.addEventListener('click', (event) => {
+            event.preventDefault();
+            // Add your logic to handle the form submission here
+            console.log('Form submitted');
+        });
+    } else {
+        console.error('Submit button not found');
+    }
+}
 // Run the injection when the content script loads
 injectToolbar();
 
@@ -286,6 +343,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.action === 'injectToolbar') {
         injectToolbar();
         sendResponse({success: true});
+        console.log('Toolbar injected');
     }
 });
 

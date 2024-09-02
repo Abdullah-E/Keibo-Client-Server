@@ -1,0 +1,76 @@
+
+
+#info {
+  max-width: 600px;
+  height: 100%;
+  width: 49vh;
+  margin: 0 auto;
+  padding: 0px;
+  position: fixed;
+  top: -3px;
+  right: 4px;
+  z-index: 1000;
+}
+
+/* Rest of the CSS remains the same */
+  
+  .back {
+    font-size: 14px;
+    color: #999;
+    margin-bottom: 20px;
+  }
+  
+  .consignee-info, .shipping-details {
+    background-color: #f7f7f7;
+    padding: 20px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+  }
+  
+  .consignee-info h2, .shipping-details h2 {
+    font-size: 18px;
+    margin-bottom: 20px;
+  }
+  
+  .form-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .form-group label {
+    font-size: 14px;
+    color: #666;
+  }
+  
+  .form-group input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+  }
+  
+  .form-group input:required {
+    border-color: #ff6b6b;
+  }
+  
+  .form-group input:not(:required) {
+    border-color: #ccc;
+  }
+  
+  #submit-btn {
+    display: block;
+    width: 100%;
+    background-color: #8d6fd4;
+    color: #fff;
+    padding: 12px 0;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  #submit-btn:hover {
+    background-color: #7858c1;
+  }
