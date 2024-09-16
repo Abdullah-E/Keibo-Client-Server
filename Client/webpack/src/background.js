@@ -3,7 +3,7 @@ console.log('Background script loaded.');
 const dbName = 'ExtensionDB';
 const dbVersion = 1;
 
-const serverUrl = 'http://localhost:5000';
+const serverUrl = 'http://localhost:5000/api/v1';
 
 // Sample users for testing
 const sampleUsers = [
@@ -203,7 +203,7 @@ function handleSignup(request, sendResponse) {
       sendResponse({ success: false, error: error.toString() });
     });
   */
-  fetch(`${API_BASE_URL}/signup`, {
+  fetch(`${serverUrl}/users/signup`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

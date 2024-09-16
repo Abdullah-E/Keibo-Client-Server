@@ -1,7 +1,8 @@
 import "dotenv/config";
-import { fastify} from "./routes/init.js";
+import "./config/db.js";
+import { fastify, BASE_PATH} from "./routes/init.js";
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 
 fastify.listen(
     {host:"0.0.0.0", port: PORT}, 
@@ -14,9 +15,9 @@ fastify.listen(
     }
 )
 
-fastify.get("/", async (request, reply) => {
+fastify.get(BASE_PATH, async (request, reply) => {
     
     return reply.send({ message: "Welcome to API" });
 })
 
-import "./routes/route.js";
+import "./routes/user.js";
