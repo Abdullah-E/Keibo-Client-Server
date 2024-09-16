@@ -42,6 +42,7 @@ module.exports = {
         new CopyWebpackPlugin({
             patterns: [
                 { from: 'static', to: 'static' },
+                { from: 'manifest.json', to: 'manifest.json' },
             ],
         }),
     ],

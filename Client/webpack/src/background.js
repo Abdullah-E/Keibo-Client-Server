@@ -3,6 +3,8 @@ console.log('Background script loaded.');
 const dbName = 'ExtensionDB';
 const dbVersion = 1;
 
+const serverUrl = 'http://localhost:5000';
+
 // Sample users for testing
 const sampleUsers = [
   { email: 'john@example.com', name: 'John Doe', password: 'password123' },
@@ -180,39 +182,11 @@ const CartDB = {
 };
 
 // Message listener for various actions
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  console.log('Message received:', request.action);
-
-  switch (request.action) {
-    case 'signup':
-      handleSignup(request, sendResponse);
-      break;
-    case 'login':
-      handleLogin(request, sendResponse);
-      break;
-    case 'addToCart':
-      handleAddToCart(request, sendResponse);
-      console.log('add to cart request received:', request.userEmail);
-      break;
-    case 'removeFromCart':
-      handleRemoveFromCart(request, sendResponse);
-      console.log('remove from cart request received:', request.userEmail);
-      break;
-    case 'getCart':
-      handleGetCart(request, sendResponse);
-      console.log('get cart request received:', request.userEmail);
-      break;
-    default:
-      console.error('Unknown action:', request.action);
-      sendResponse({ success: false, error: 'Unknown action' });
-  }
-
-  return true; // Indicates that the response is sent asynchronously
-});
 
 // Handle signup
 function handleSignup(request, sendResponse) {
   console.log('Signup request received:', request.email);
+  /*
   const user = {
     email: request.email,
     name: request.name,
@@ -228,11 +202,38 @@ function handleSignup(request, sendResponse) {
       console.error('Signup failed:', error);
       sendResponse({ success: false, error: error.toString() });
     });
+  */
+  fetch(`${API_BASE_URL}/signup`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      email: request.email,
+      name: request.name,
+      password: request.password
+    }),
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      console.log('Signup successful:', request.email);
+      sendResponse({ success: true });
+    } else {
+      console.error('Signup failed:', data.error);
+      sendResponse({ success: false, error: data.error });
+    }
+  })
+  .catch(error => {
+    console.error('Signup failed:', error);
+    sendResponse({ success: false, error: error.toString() });
+  });
 }
 
 // Handle login
 function handleLogin(request, sendResponse) {
   console.log('Login request received:', request.email);
+  /*
   UserDB.get(request.email)
     .then(user => {
       if (user && user.password === request.password) { // Note: In a real application, use proper password hashing and comparison
@@ -249,22 +250,45 @@ function handleLogin(request, sendResponse) {
       console.error('Login error:', error);
       sendResponse({success: false, error: 'An error occurred'});
     });
+  */
+  fetch(`${API_BASE_URL}/login`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      email: request.email,
+      password: request.password
+    }),
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      console.log('Login successful:', request.email);
+      chrome.storage.local.set({isLoggedIn: true, user: {email: request.email, name: data.name}}, () => {
+        sendResponse({success: true, user: {email: request.email, name: data.name}});
+      });
+    } else {
+      console.log('Login failed:', data.error);
+      sendResponse({success: false, error: data.error});
+    }
+  })
 }
 
 // Handle add to cart
 function handleAddToCart(request, sendResponse) {
   console.log('Add to cart request received:', request.userEmail);
   CartDB.get(request.userEmail)
-    .then(items => {
-      const existingItemIndex = items.findIndex(item => item.product === request.item.product);
-      if (existingItemIndex !== -1) {
-        // Update quantity if item already exists
-        items[existingItemIndex].quantity += request.item.quantity;
-      } else {
-        // Add new item if it doesn't exist
-        items.push(request.item);
-      }
-      return CartDB.update(request.userEmail, items);
+  .then(items => {
+    const existingItemIndex = items.findIndex(item => item.product === request.item.product);
+    if (existingItemIndex !== -1) {
+      // Update quantity if item already exists
+      items[existingItemIndex].quantity += request.item.quantity;
+    } else {
+      // Add new item if it doesn't exist
+      items.push(request.item);
+    }
+    return CartDB.update(request.userEmail, items);
     })
     .then(() => {
       console.log('Cart updated successfully', request.item.product);
@@ -308,4 +332,34 @@ function handleGetCart(request, sendResponse) {
         sendResponse({ success: false, error });
       });
     return true;
-    }}
+  }
+}
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  console.log('Message received:', request.action);
+
+  switch (request.action) {
+    case 'signup':
+      handleSignup(request, sendResponse);
+      break;
+    case 'login':
+      handleLogin(request, sendResponse);
+      break;
+    case 'addToCart':
+      handleAddToCart(request, sendResponse);
+      console.log('add to cart request received:', request.userEmail);
+      break;
+    case 'removeFromCart':
+      handleRemoveFromCart(request, sendResponse);
+      console.log('remove from cart request received:', request.userEmail);
+      break;
+    case 'getCart':
+      handleGetCart(request, sendResponse);
+      console.log('get cart request received:', request.userEmail);
+      break;
+    default:
+      console.error('Unknown action:', request.action);
+      sendResponse({ success: false, error: 'Unknown action' });
+  }
+
+  return true; // Indicates that the response is sent asynchronously
+});
