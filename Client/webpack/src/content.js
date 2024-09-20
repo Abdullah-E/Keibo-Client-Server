@@ -11,6 +11,25 @@ import "../static/info.css";
 
 // Initialize cart array
 let cart = [];
+let loggedInUser = null
+
+function getLocalStorage(key) {
+    return new Promise((resolve) => {
+      chrome.storage.local.get([key], function(result) {
+        console.log(`${key}:`, result[key]);
+        resolve(result[key]);
+      });
+    });
+}
+
+async function getUserEmail(){
+    if(loggedInUser){
+        return loggedInUser
+    }
+    loggedInUser = await getLocalStorage('user');
+    return loggedInUser
+}
+
 
 // Function to inject toolbar
 function injectToolbar() {
@@ -92,8 +111,13 @@ function setupEventListeners(pageProduct, pagePrice, imageUrl) {
 }
 
 // Function to add item to cart
-function addToCart(product, price, imageUrl) {
-    const userEmail = 'sal@keibo.com'; // Replace with actual user's email or fetch dynamically
+async function addToCart(product, price, imageUrl) {
+    // const userEmail = 'sal@keibo.com'; // Replace with actual user's email or fetch dynamically
+    const userEmail = await getUserEmail();
+    if(!userEmail){
+        console.error('User email not found in addToCart');
+        return
+    }
     let item;
     let existingItem = cart.find(item => item.product === product);
 
@@ -164,7 +188,12 @@ function getProductPrice() {
 
 // Function to inject cart
 function injectCart() {
-    const userEmail = 'sal@keibo.com'; // Replace with actual user's email or fetch dynamically
+    // const userEmail = 'sal@keibo.com'; // Replace with actual user's email or fetch dynamically
+    const userEmail = getUserEmail();
+    if(!userEmail){
+        console.error('User email not found in inject cart');
+        return
+    }
     console.log('Retrieving cart items for user:', userEmail);
     chrome.runtime.sendMessage({ action: 'getCart', userEmail }, response => {
         if (response.success) {
@@ -281,7 +310,13 @@ function removeItem(productName) {
         console.error('Product name not provided');
         return;
     }
-    const userEmail = 'sal@keibo.com'; // Replace with actual user's email or fetch dynamically
+    // const userEmail = 'sal@keibo.com'; // Replace with actual user's email or fetch dynamically
+    const userEmail = getUserEmail();
+    if(!userEmail){
+        console.error('User email not found in removeItem');
+        return
+    }
+
     chrome.runtime.sendMessage({ action: 'removeFromCart', userEmail, productName }, response => {
         if (response.success) {
             console.log('Product removed from cart:', productName);

@@ -1,0 +1,30 @@
+ISSUES
+- login/userState
+- extension unresponsive after closing cart
+
+TODO:
+    - order stuff (frontend, extension)
+
+    backend - set tables, getOrders etc apis
+
+    dashboard pages:
+        login page
+
+        users
+        userInfo
+
+        orders 
+        orderDetail
+        Quotation
+
+        customers
+        customerDetail
+
+
+timeline
+
+    - orders set on backend + skeleton dashboard pages (abd)
+    - order going from backend -> dashboard (abd)
+    - dashboard styling (salar)
+
+    - orders going from extension -> backend

@@ -113,3 +113,47 @@ export const addToCart = async (request, reply) => {
 
 }
 
+export const removeFromCart = async (request, reply) => {
+    const {email} = request.query;
+    const {productName:itemName} = request.body;
+    // console.log("from fe:",item);
+    // // const {}
+
+    try{
+        const {data:user} = await supabase
+        .from('user')
+        .select('id, email')
+        .eq('email', email)
+        .single();
+
+        const {data:cartData} = await supabase
+        .from('cart')
+        .select(`
+            items
+        `)
+        .eq('user_id', user.id)
+        .single();
+        
+        if (!cartData || cartData.length === 0){
+            return reply.send({ success: true, data:[] });
+        }
+
+        //update existing cart
+        console.log("Updating existing cart");
+        let updatedItems = cartData.items.filter(cartItem=>cartItem.product !== itemName);
+        
+        const {data:updateData} = await supabase
+        .from('cart')
+        .update({
+            items:updatedItems
+        })
+        .eq('user_id', user.id)
+        .single();
+
+        return reply.send({ success: true, data:updateData });
+
+    }
+    catch(err){
+        console.error(err);
+    }
+}
