@@ -22,3 +22,4 @@ fastify.get(BASE_PATH, async (request, reply) => {
 
 import "./routes/user.js";
 import "./routes/cart.js";
+import "./routes/order.js";
