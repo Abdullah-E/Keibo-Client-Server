@@ -52,13 +52,26 @@ export const createOrder = async (request, reply) => {
 export const getOrders = async (request, reply) => {
     const params = request.query;
 
-    const email = params.email;
+    const {email, user_id} = params;
 
     try{
-        const { data, error} = await supabase
+        let query = supabase
             .from("order")
-            .select("*")
-            .eq("email", email);
+            .select("*");
+        if(email){
+            const { data:user, error:userError } = await supabase
+                .from('user')
+                .select('id, email')
+                .eq('email', email)
+                .single();
+            if(userError) throw userError;
+            query = query.eq("user_id", user.id);
+        }
+        if(user_id){
+            query = query.eq("user_id", user_id);
+        }
+        const { data, error } = await query;
+        
         if(error) throw error;
         return reply.status(200).send({
             message: "Orders fetched successfully",
@@ -74,4 +87,23 @@ export const getOrders = async (request, reply) => {
     }
 
 
+}
+
+export const getOrder = async (request, reply) => {
+    const { id } = request.query;
+    try{
+        const { data, error } = await supabase
+            .from('order')
+            .select('*')
+            .eq('id', id)
+            .single();
+
+        if (error) throw error;
+
+        return reply.send({ success: true, data });
+    }
+    catch(err){
+        console.error(err);
+        return reply.status(400).send({ success: false, error: err.message });
+    }
 }
