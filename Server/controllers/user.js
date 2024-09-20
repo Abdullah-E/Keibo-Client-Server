@@ -54,6 +54,26 @@ export const loginUser = async (request, reply) => {
     }
 }
 
+export const getUser = async (request, reply) => {
+    const { id } = request.query;
+    try{
+        const { data, error } = await supabase
+        .from('user')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+        if (error) throw error;
+
+        return reply.send({ success: true, data });
+    }
+    catch(err){
+        fastify.log.error(err);
+        console.error(err);
+        reply.status(400).send({ success: false, error: err.message });
+    }
+}
+
 export const getUsers = async (request, reply) => {
     try{
         const params = request.query;
