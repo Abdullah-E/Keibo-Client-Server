@@ -1,4 +1,10 @@
 // Import statements
+/*
+
+Here lies content script V0.1 
+            - 
+        2024-09-23
+
 import toolbarHtml from '../static/toolbar.html';
 import "../static/toolbar.css";
 import cartHtml from '../static/cart.html';
@@ -12,6 +18,7 @@ import "../static/info.css";
 // Initialize cart array
 let cart = [];
 let loggedInUser = null
+const userEmail = 'user1@gmail.com';
 
 function getLocalStorage(key) {
     return new Promise((resolve) => {
@@ -135,11 +142,12 @@ async function addToCart(product, price, imageUrl) {
 
     // Send updated cart to background script
     chrome.runtime.sendMessage({ action: 'addToCart', userEmail, item }, response => {
-        if (response.success) {
-            console.log('Cart updated successfully:', product);
-        } else {
-            console.error('Failed to update cart:', response.error);
-        }
+        // if (response.success) {
+        console.log("response in add to cart:", response);
+        console.log('Cart updated successfully:', product);
+        // } else {
+            // console.error('Failed to update cart:', response.error);
+        // }
     });
 
     updateCartItems();
@@ -189,13 +197,14 @@ function getProductPrice() {
 // Function to inject cart
 function injectCart() {
     // const userEmail = 'sal@keibo.com'; // Replace with actual user's email or fetch dynamically
-    const userEmail = getUserEmail();
+    // const userEmail = getUserEmail();
     if(!userEmail){
         console.error('User email not found in inject cart');
         return
     }
     console.log('Retrieving cart items for user:', userEmail);
     chrome.runtime.sendMessage({ action: 'getCart', userEmail }, response => {
+        console.log('Cart response:', response);
         if (response.success) {
             cart = response.items;
             console.log('Cart items:', cart);
@@ -311,7 +320,7 @@ function removeItem(productName) {
         return;
     }
     // const userEmail = 'sal@keibo.com'; // Replace with actual user's email or fetch dynamically
-    const userEmail = getUserEmail();
+    // const userEmail = getUserEmail();
     if(!userEmail){
         console.error('User email not found in removeItem');
         return
@@ -365,6 +374,8 @@ function injectInfo() {
             event.preventDefault();
             // Add your logic to handle the form submission here
             console.log('Form submitted');
+
+            
         });
     } else {
         console.error('Submit button not found');
@@ -384,3 +395,23 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 // Make removeItem function globally available
 window.removeItem = removeItem;
+
+*/
+
+import {UI} from "./UI.js";
+import {Cart} from "./Cart.js";
+import {Auth} from "./Auth.js";
+console.log('loaded auth.js', Auth);
+
+
+let loggedIn = Auth.checkLogin();
+console.log('Logged in:', loggedIn);
+
+const cart = new Cart();
+UI.injectToolbar();
+cart.getItems();
+// UI.setupToolbarEventListeners();
+//wait for page to load and then inject toolbar
+// document.addEventListener('DOMContentLoaded', () => {
+//     UI.injectToolbar();
+// });

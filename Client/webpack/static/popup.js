@@ -6,24 +6,26 @@ document.addEventListener('DOMContentLoaded', function() {
     const passwordInput = document.getElementById('password');
     const passwordToggle = document.getElementById('passwordToggle');
 
-    loginForm.addEventListener('submit', function(e) {
+    loginForm.addEventListener('submit', async function(e) {
         e.preventDefault();
         const email = emailInput.value;
         const password = passwordInput.value;
-
-        chrome.runtime.sendMessage({ action: 'login', email, password }, function(response) {
-            console.log('Login response:', response);
-            if (response && response.success) {
+        try{
+            const resp = await chrome.runtime.sendMessage({ action: 'login', email, password});
+            console.log('Login response:', resp);
+            if(resp && resp.success){
                 alert('Login successful!');
-                chrome.storage.local.set({ 'userEmail': email }, function() {
-                    console.log('User email saved:', email);
-                    // Close the popup after successful login
-                    window.close();
-                });
-            } else {
-                alert('Login failed: ' +  (response ? response.error : 'Unknown error'));
+                chrome.storage.local.set({ isLoggedIn: true });
+                
             }
-        });
+            else{
+                alert('Login failed: ' + (resp ? resp.error : 'Unknown error'));
+            }
+        }
+        catch(error){
+            console.error('Error logging in:', error);
+            alert('Error logging in: ' + error.message);
+        }
     });
 
     passwordToggle.addEventListener('click', function() {
