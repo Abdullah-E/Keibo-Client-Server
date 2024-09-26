@@ -399,17 +399,15 @@ window.removeItem = removeItem;
 */
 
 import {UI} from "./UI.js";
-import {Cart} from "./Cart.js";
 import {Auth} from "./Auth.js";
-console.log('loaded auth.js', Auth);
 
+Auth.checkLogin().then((response) => {
+    let loggedIn = response.success;
+    console.log('Logged in:', loggedIn);
+    const ui = new UI();
+    ui.injectToolbar();
 
-let loggedIn = Auth.checkLogin();
-console.log('Logged in:', loggedIn);
-
-const cart = new Cart();
-UI.injectToolbar();
-cart.getItems();
+})
 // UI.setupToolbarEventListeners();
 //wait for page to load and then inject toolbar
 // document.addEventListener('DOMContentLoaded', () => {

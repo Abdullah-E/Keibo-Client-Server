@@ -3,6 +3,7 @@ import {UI} from './UI.js';
 
 export class Cart{
     constructor(){
+        console.log('Cart constructor');
         this.items = [];
     }
 
@@ -16,7 +17,7 @@ export class Cart{
 
         try{
             await BackgroundCommunication.sendMessage('addToCart', { product, price, imageUrl, quantity:existingItem?.quantity || 1} );
-            this.updateUI();
+            // this.updateUI();
         }
         catch(error){
             console.error('Error adding item to cart:', error);
@@ -28,7 +29,7 @@ export class Cart{
 
         try{
             await BackgroundCommunication.sendMessage('removeFromCart', { productName });
-            this.updateUI();
+            // this.updateUI();
         }
         catch(error){
             console.error('Error removing item from cart:', error);
@@ -38,8 +39,10 @@ export class Cart{
     async getItems(){
         try{
             const response = await BackgroundCommunication.sendMessage('getCart', {});
+            console.log('Cart items:', response.items);
             this.items = response.items;
-            this.updateUI();
+            // this.updateUI();
+            return response.items;
         }
         catch(error){
             console.error('Error getting cart:', error);
@@ -47,6 +50,6 @@ export class Cart{
     }
 
     updateUI(){
-        UI.updateCart(this.items);
+        UI.updateCartItems(this.items);
     }
 }

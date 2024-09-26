@@ -258,6 +258,11 @@ class API {
 			});
 			const data = await response.json();
 
+			if(!data.success){
+				console.error("GET", completeUrl, "Error:", data.error);
+				throw new Error(data.error);
+			}
+
 			console.log(
 				"GET",
 				completeUrl,
@@ -320,7 +325,6 @@ class StorageService {
 }
 
 class UserService{
-  const 
 	static async signup(request){
 		// const response = await API.post('/users/signup', { email, name, password });
 		try{
@@ -405,11 +409,70 @@ class UserService{
   }
 }
 
+class CartService{
+	static async get(){
+		const user = await StorageService.get('user');
+		console.log('User in get cart:', user);
+		const userEmail = user.email;
+
+		if(!userEmail){
+			throw new Error('User not logged in');
+		}
+
+		const url = `/cart?email=${encodeURIComponent(userEmail)}`;
+		const response = await API.get(url);
+		return {success: true, items: response.data};
+
+
+		// return API.get(url);
+	}
+
+	static async addToCart(request){
+		const user = await StorageService.get('user');
+		const userEmail = user.email;
+
+		if(!userEmail){
+			throw new Error('User not logged in');
+		}
+
+
+		const payload = {
+			product: request.product,
+			price: request.price,
+			imageUrl: request.imageUrl
+			// quantity: request.quantity
+		}
+		const url = `/cart/add?email=${encodeURIComponent(userEmail)}`;
+		const response = await API.post(url, payload);
+		return {success: true};
+	}
+
+	static async removeFromCart(request){
+		const user = await StorageService.get('user');
+		const userEmail = user.email;
+
+		if(!userEmail){
+			throw new Error('User not logged in');
+		}
+
+		const payload = {
+			productName: request.productName
+		}
+		const url = `/cart/remove?email=${encodeURIComponent(userEmail)}`;
+		const response = await API.post(url, payload);
+		return {success: true};
+	}
+	
+}
+
 const actionToServiceMap = {
 	'signup': UserService.signup,
 	'login': UserService.login,
 	'getLoggedInEmail': UserService.getLoggedInEmail,
 	'checkLogin':UserService.checkLogin,
+	'getCart': CartService.get,
+	'addToCart': CartService.addToCart,
+	'removeFromCart': CartService.removeFromCart,
 }
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {

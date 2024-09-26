@@ -1,3 +1,5 @@
+import {Cart} from './Cart.js';
+
 import toolbarHTML from '../static/toolbar.html';
 import '../static/toolbar.css';
 import cartHTML from '../static/cart.html';
@@ -12,10 +14,14 @@ import logo from '../KieboLogo.png';
 // console.log("toolbar in UI.js",toolbarHTML);
 
 export class UI{
+    constructor(){
+        this.cart = new Cart();
+        this.cart.getItems();
+    }
 
     //UI injectors:
 
-    static injectToolbar(){
+    injectToolbar(){
         console.log('Injecting toolbar...');
         let toolbarDiv = document.getElementById('toolbar');
         if (toolbarDiv) {
@@ -37,7 +43,7 @@ export class UI{
         this.setupToolbarEventListeners();
     }
 
-    static injectCart(){
+    injectCart(){
         let existingCart = document.getElementById('cart-container');
         if (existingCart) {
             existingCart.style.display = 'block';
@@ -49,11 +55,10 @@ export class UI{
 
             this.setupCartEventListeners();
         }
-        // You'll need to implement updateCartItems in your Cart class
-        // Cart.updateCartItems();
+        this.updateCartItems();
     }
     
-    static injectCustomization(){
+    injectCustomization(){
         const customizationDiv = document.createElement('div');
         customizationDiv.id = 'customization-container';
         customizationDiv.innerHTML = customHTML;
@@ -69,7 +74,7 @@ export class UI{
         }
     }
     
-    static injectInfo(){
+    injectInfo(){
         const infoDiv = document.createElement('div');
         infoDiv.id = 'info';
         infoDiv.innerHTML = infoHTML;
@@ -87,7 +92,9 @@ export class UI{
         }
     }
 
-    static updateCartItems(cart){
+    updateCartItems(){
+        // const cart = Cart.getItems();
+        const cart = this.cart.items;
         const cartItemsContainer = document.querySelector('.cart');
         if (!cartItemsContainer) {
             console.error('Cart container not found');
@@ -116,9 +123,9 @@ export class UI{
 
             const removeButton = itemElement.querySelector('.remove-item');
             if (removeButton) {
-                removeButton.addEventListener('click', function() {
-                    // You'll need to implement removeItem in your Cart class
-                    Cart.removeItem(item.product);
+                removeButton.addEventListener('click', async ()=> {
+                    await (this.cart.removeItem(item.product));
+                    this.updateCartItems();
                 });
             }
 
@@ -128,7 +135,7 @@ export class UI{
         this.updateTotalPrice(cart);
     }
 
-    static updateTotalPrice(cart){
+    updateTotalPrice(cart){
         const totalElement = document.querySelector('.total');
         if (!totalElement) {
             console.error('Total element not found');
@@ -143,18 +150,20 @@ export class UI{
         totalElement.textContent = `TOTAL: ¥ ${total.toFixed(2)}`;
     }
     //event listeners:
-    static setupToolbarEventListeners() {
+    setupToolbarEventListeners() {
         const addToCartButton = document.getElementById('add-to-cart');
         const viewCartButton = document.getElementById('view-cart');
     
         if (addToCartButton) {
-            addToCartButton.addEventListener('click', () => {
+            addToCartButton.addEventListener('click', async () => {
                 const pageProduct = this.getProductTitle();
                 const pagePrice = this.getProductPrice();
                 const imageUrl = this.getProductImage();
                 console.log('Add to cart clicked', pageProduct, pagePrice, imageUrl);
                 // You'll need to implement addToCart in your Cart class
+                await this.cart.addItem(pageProduct, pagePrice, imageUrl);
                 // Cart.addToCart(pageProduct, pagePrice, imageUrl);
+                // Cart.addItem(pageProduct, pagePrice, imageUrl);
             });
         }
     
@@ -168,7 +177,7 @@ export class UI{
         }
     }
 
-    static setupCartEventListeners() {
+    setupCartEventListeners() {
         const closeButton = document.getElementById('close-cart');
         const orderButton = document.querySelector('.request-order');
 
@@ -190,7 +199,7 @@ export class UI{
     }
 
     //Scrapers:
-    static getProductTitle(){
+    getProductTitle(){
         const selectors = [
             '.ItemTitle--mainTitle--2OrrwrD.f-els-2',
             '.mainTitle--O1XCl8e2.f-els-2',
@@ -209,7 +218,7 @@ export class UI{
         return 'Unknown Product';
     }
 
-    static getProductPrice(){
+    getProductPrice(){
         const selectors = [
             '.SecurityPrice--text--3eB2Q7Q',
             '.text--Mdqy24Ex'
@@ -225,7 +234,7 @@ export class UI{
         return 'Unknown Price';
     }
 
-    static getProductImage(){
+    getProductImage(){
         const imageDiv = document.querySelector('.mainPic--zxTtQs0P');
         return imageDiv ? imageDiv.src : 'default-image-url.jpg';
     }
