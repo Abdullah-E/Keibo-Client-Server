@@ -242,8 +242,8 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
 */
 
 class API {
-	// static serverUrl = 'keibo-client-server.vercel.app/api/v1';
-	static serverUrl = 'http://localhost:5000/api/v1';
+	static serverUrl = 'https://keibo-client-server.vercel.app/api/v1';
+	// static serverUrl = 'http://localhost:5000/api/v1';
 
 	static async get(url) {
 		try {
@@ -462,6 +462,24 @@ class CartService{
 		const response = await API.post(url, payload);
 		return {success: true};
 	}
+
+	static async submitOrder(request){
+		const user = await StorageService.get('user');
+		const userEmail = user.email;
+
+		if(!userEmail){
+			throw new Error('User not logged in');
+		}
+
+		const payload = {
+			consignee_info: request.consigneeInfo,
+			shipping_info: request.shippingInfo,
+			delivery_mode: request.deliveryMode
+		}
+		const url = `/orders?email=${encodeURIComponent(userEmail)}`;
+		const response = await API.post(url, payload);
+		return {success: true};
+	}
 	
 }
 
@@ -473,6 +491,7 @@ const actionToServiceMap = {
 	'getCart': CartService.get,
 	'addToCart': CartService.addToCart,
 	'removeFromCart': CartService.removeFromCart,
+	'submitOrder': CartService.submitOrder,
 }
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {

@@ -17,6 +17,7 @@ export class UI{
     constructor(){
         this.cart = new Cart();
         this.cart.getItems();
+        this.deliveryMode = 'Sea Freight';
     }
 
     //UI injectors:
@@ -67,10 +68,18 @@ export class UI{
 
         const requestButton = document.getElementById('continue-button');
         if (requestButton) {
-        requestButton.addEventListener('click', (event) => {
-            event.preventDefault();
-            this.injectInfo();
-        });
+            requestButton.addEventListener('click', (event) => {
+                event.preventDefault();
+                this.injectInfo();
+            });
+        }
+
+        const deliveryModeSelect = document.getElementById('delivery-mode');
+        if (deliveryModeSelect) {
+            deliveryModeSelect.addEventListener('change', (event) => {
+                this.deliveryMode = event.target.value;
+                console.log('Delivery mode:', this.deliveryMode);
+            });
         }
     }
     
@@ -87,13 +96,78 @@ export class UI{
             submitButton.addEventListener('click', (event) => {
                 event.preventDefault();
                 // Add your logic to handle the form submission here
+                event.preventDefault();
+                this.handleFormSubmission();
                 console.log('Form submitted');
             });
         }
     }
 
+    //UI misc handlers:
+
+    handleFormSubmission() {
+        // Gather consignee information
+        const consigneeInfo = {
+            firstName: document.getElementById('first-name').value,
+            lastName: document.getElementById('last-name').value,
+            mobileNumber: document.getElementById('mobile-number').value,
+            emailAddress: document.getElementById('email-address').value
+        };
+
+        // Gather shipping information
+        const shippingInfo = {
+            addressLine1: document.getElementById('address-line-1').value,
+            city: document.getElementById('city').value,
+            stateRegion: document.getElementById('state-region').value,
+            country: document.getElementById('country').value,
+            postCode: document.getElementById('post-code').value
+        };
+
+        // Validate the form
+        if (this.validateForm(consigneeInfo, shippingInfo)) {
+            // Submit the order
+            this.cart.submitOrder(consigneeInfo, shippingInfo, this.deliveryMode)
+                .then(() => {
+                    alert('Order submitted successfully!');
+                    // Clear the cart and update UI
+                    this.cart.items = [];
+                    this.updateCartItems();
+                    // Hide the info div and show the cart
+                    document.getElementById('info').style.display = 'none';
+                    this.injectCart();
+                })
+                .catch(error => {
+                    console.error('Error submitting order:', error);
+                    alert('There was an error submitting your order. Please try again.');
+                });
+        }
+    }
+    validateForm(consigneeInfo, shippingInfo) {
+        // Check if all fields are filled
+        for (let key in consigneeInfo) {
+            if (!consigneeInfo[key]) {
+                alert(`Please fill in the ${key.replace(/([A-Z])/g, ' $1').toLowerCase()} field.`);
+                return false;
+            }
+        }
+        for (let key in shippingInfo) {
+            if (!shippingInfo[key]) {
+                alert(`Please fill in the ${key.replace(/([A-Z])/g, ' $1').toLowerCase()} field.`);
+                return false;
+            }
+        }
+
+        // Validate email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(consigneeInfo.emailAddress)) {
+            alert('Please enter a valid email address.');
+            return false;
+        }
+
+        return true;
+    }
+
     updateCartItems(){
-        // const cart = Cart.getItems();
         const cart = this.cart.items;
         const cartItemsContainer = document.querySelector('.cart');
         if (!cartItemsContainer) {

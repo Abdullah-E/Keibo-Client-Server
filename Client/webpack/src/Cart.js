@@ -1,5 +1,4 @@
 import {BackgroundCommunication} from './BackgroundCommunication.js';
-import {UI} from './UI.js';
 
 export class Cart{
     constructor(){
@@ -49,7 +48,15 @@ export class Cart{
         }
     }
 
-    updateUI(){
-        UI.updateCartItems(this.items);
+    async submitOrder(consigneeInfo, shippingInfo, deliveryMode){
+        try{
+            const response = await BackgroundCommunication.sendMessage('submitOrder', {consigneeInfo, shippingInfo, deliveryMode});
+            console.log('Order submitted:', response);
+            this.items = [];
+            // this.updateUI();
+        }
+        catch(error){
+            console.error('Error submitting order:', error);
+        }
     }
 }
