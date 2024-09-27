@@ -7,6 +7,10 @@ TODO:
 
     backend - set tables, getOrders etc apis
 
+    extension:
+        logged in page
+        sign out
+
     dashboard pages:
         login page
 
@@ -20,11 +24,17 @@ TODO:
         customers
         customerDetail
 
+    user dashboard pages:
+        My orders
+        same orderdetail with quote
+        profile page?
 
 timeline
 
-    - orders set on backend + skeleton dashboard pages (abd)
-    - order going from backend -> dashboard (abd)
-    - dashboard styling (salar)
+    - orders set on backend + skeleton dashboard pages (abd) DONE
+    - order going from backend -> dashboard (abd) DONE
 
-    - orders going from extension -> backend
+    - dashboard styling (salar)
+    - quotation entering option in order page (salar)
+
+    - orders going from extension -> backend (abd) DONE
