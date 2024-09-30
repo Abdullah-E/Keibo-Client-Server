@@ -242,8 +242,8 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
 */
 
 class API {
-	static serverUrl = 'https://keibo-client-server.vercel.app/api/v1';
-	// static serverUrl = 'http://localhost:5000/api/v1';
+	// static serverUrl = 'https://keibo-client-server.vercel.app/api/v1';
+	static serverUrl = 'http://localhost:5000/api/v1';
 
 	static async get(url) {
 		try {
@@ -328,7 +328,7 @@ class UserService{
 	static async signup(request){
 		// const response = await API.post('/users/signup', { email, name, password });
 		try{
-			const response = await API.post('/users/signup', request)
+			const response = await API.post('/user/signup', request)
 			console.log('Signup response:', response);
 			if(response.success){
 				return { success: true, data:true };
@@ -348,7 +348,7 @@ class UserService{
 		try{
 			const { email, password } = request;
 		
-			const response = await API.post('/users/login', { email, password });
+			const response = await API.post('/user/login', { email, password });
 			console.log('Login response:', response);
 			if(response.success){
 				const user = response.data.userData;
@@ -439,7 +439,8 @@ class CartService{
 		const payload = {
 			product: request.product,
 			price: request.price,
-			imageUrl: request.imageUrl
+			imageUrl: request.imageUrl,
+			prodUrl:request.prodUrl
 			// quantity: request.quantity
 		}
 		const url = `/cart/add?email=${encodeURIComponent(userEmail)}`;

@@ -233,9 +233,10 @@ export class UI{
                 const pageProduct = this.getProductTitle();
                 const pagePrice = this.getProductPrice();
                 const imageUrl = this.getProductImage();
-                console.log('Add to cart clicked', pageProduct, pagePrice, imageUrl);
+                const prodUrl = this.getProductURL();
+                console.log('Add to cart clicked', pageProduct, pagePrice, imageUrl, prodUrl);
                 // You'll need to implement addToCart in your Cart class
-                await this.cart.addItem(pageProduct, pagePrice, imageUrl);
+                await this.cart.addItem(pageProduct, pagePrice, imageUrl, prodUrl);
                 // Cart.addToCart(pageProduct, pagePrice, imageUrl);
                 // Cart.addItem(pageProduct, pagePrice, imageUrl);
             });
@@ -311,5 +312,9 @@ export class UI{
     getProductImage(){
         const imageDiv = document.querySelector('.mainPic--zxTtQs0P');
         return imageDiv ? imageDiv.src : 'default-image-url.jpg';
+    }
+
+    getProductURL(){
+        return window.location.href;
     }
 }

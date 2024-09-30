@@ -6,7 +6,7 @@ export class Cart{
         this.items = [];
     }
 
-    async addItem(product, price, imageUrl){
+    async addItem(product, price, imageUrl, prodUrl){
         const existingItem = this.items.find(item => item.product === product);
         if (existingItem) {
             existingItem.quantity++;
@@ -15,7 +15,7 @@ export class Cart{
         }
 
         try{
-            await BackgroundCommunication.sendMessage('addToCart', { product, price, imageUrl, quantity:existingItem?.quantity || 1} );
+            await BackgroundCommunication.sendMessage('addToCart', { product, price, imageUrl, quantity:existingItem?.quantity || 1, prodUrl} );
             // this.updateUI();
         }
         catch(error){

@@ -12,10 +12,12 @@ document.addEventListener('DOMContentLoaded', function() {
         const password = passwordInput.value;
         try{
             const resp = await chrome.runtime.sendMessage({ action: 'login', email, password});
-            console.log('Login response:', resp);
-            if(resp && resp.success){
+            console.log('Login resp:', resp);
+            if(resp && resp.data.success === true){
                 alert('Login successful!');
+                // console.log('login response:', Object.keys());
                 chrome.storage.local.set({ isLoggedIn: true });
+                chrome.storage.local.set({ user: resp.data.data });
                 
             }
             else{

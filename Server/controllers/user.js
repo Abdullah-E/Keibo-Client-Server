@@ -3,6 +3,7 @@ import { fastify } from "../routes/init.js";
 
 export const createUser = async (request, reply) => {
     const { email, name, password } = request.body;
+    const role = request.query.role || 'user';
     try{
         const { data, error } = await supabase.auth.signUp({
             email,
@@ -13,7 +14,7 @@ export const createUser = async (request, reply) => {
         console.log(data.user.id);
         const { data: userData, error: userError } = await supabase
         .from('user')
-        .insert([{ id: data.user.id, email, name }]);
+        .insert([{ id: data.user.id, email, name, role }]);
 
         if (userError) throw userError;
 
@@ -37,7 +38,7 @@ export const loginUser = async (request, reply) => {
         if (error) throw error;
         
         const { data: userData, error: userError } = await supabase.from('user')
-        .select('id, email, name')
+        .select('id, email, name, role')
         .eq('id', data.user.id)
         .single();
 
