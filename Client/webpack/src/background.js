@@ -242,8 +242,8 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
 */
 
 class API {
-	// static serverUrl = 'https://keibo-client-server.vercel.app/api/v1';
-	static serverUrl = 'http://localhost:5000/api/v1';
+	static serverUrl = 'https://keibo-client-server.vercel.app/api/v1';
+	// static serverUrl = 'http://localhost:5000/api/v1';
 
 	static async get(url) {
 		try {
