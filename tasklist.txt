@@ -5,14 +5,17 @@ ISSUES
 TODO:
     - order stuff (frontend, extension)
 
-    backend - set tables, getOrders etc apis
+    backend - set tables, getOrders etc apis (done)
+    quotes (done)
+    get user
+
 
     extension:
-        logged in page
+        logged in page 
         sign out
 
     dashboard pages:
-        login page
+        login page (done)
 
         users
         userInfo
@@ -25,8 +28,8 @@ TODO:
         customerDetail
 
     user dashboard pages:
-        My orders
-        same orderdetail with quote
+        My orders (kinda)
+        same orderdetail with quote 
         profile page?
 
 timeline
@@ -38,3 +41,18 @@ timeline
     - quotation entering option in order page (salar)
 
     - orders going from extension -> backend (abd) DONE
+
+    - FRONTEND:
+        -api integration :
+            - orders page (salar)
+            - order detail page with quote(abd+salar)
+
+        layout:
+            -routes theek of admin and user (abd)
+    -BACKEND:
+        -order info more (abd)
+
+            - user page 
+            - user detail page
+            - customer page
+            - customer detail page
