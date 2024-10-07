@@ -56,8 +56,9 @@ export const loginUser = async (request, reply) => {
 }
 
 export const getUser = async (request, reply) => {
-    const { id } = request.query;
     try{
+        const { id } = request.query;
+        console.log("fetching user", id);
         const { data, error } = await supabase
         .from('user')
         .select('*')
