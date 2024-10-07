@@ -52,12 +52,18 @@ export const createOrder = async (request, reply) => {
 export const getOrders = async (request, reply) => {
     const params = request.query;
 
-    const {email, user_id} = params;
+    const {email, user_id, recent} = params;
 
     try{
         let query = supabase
             .from("order")
             .select("*");
+        // if(recent){
+        //     query = query.eq("created_at", recent);
+        // }
+        console.log(user_id);
+
+        
         if(email){
             const { data:user, error:userError } = await supabase
                 .from('user')
@@ -97,6 +103,51 @@ export const getOrder = async (request, reply) => {
             .select('*')
             .eq('id', id)
             .single();
+
+        if (error) throw error;
+
+        return reply.send({ success: true, data });
+    }
+    catch(err){
+        console.error(err);
+        return reply.status(400).send({ success: false, error: err.message });
+    }
+}
+
+//admin functions:
+
+export const getAllOrders = async (request, reply) => {
+    try{
+        const {sortBy, order} = request.query;
+
+        let query = supabase
+            .from('order')
+            .select('*');
+
+        if(sortBy){
+            query = query.order(sortBy, {ascending: order === "asc"});
+
+        }
+        const { data, error } = await query;
+
+
+        if (error) throw error;
+
+        return reply.send({ success: true, data });
+    }
+    catch(err){
+        console.error(err);
+        return reply.status(400).send({ success: false, error: err.message });
+    }
+}
+
+export const updateQuote = async (request, reply) => {
+    const { id, quotation } = request.body;
+    try{
+        const { data, error } = await supabase
+            .from('order')
+            .update({ quotation })
+            .eq('id', id);
 
         if (error) throw error;
 
