@@ -513,24 +513,5 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 		sendResponse({ success: false, error: error.toString() });
 	});
   	return true;
-	// try{
-	// 	let response;
-	// 	switch(request.action){
-	// 		case 'login':
-	// 			console.log('Login request received:', request.email);
-	// 			// response = await UserService.login(request.email, request.password);
-	// 			sendResponse({ success: true, data: "yh" });
-
-	// 			break;
-	// 		default:
-	// 			throw new Error('Unknown action');
-	// 	}
-	// 	// sendResponse({ success: true, data: response });
-	// }
-	// catch(error){
-	// 	console.error('Error:', error);
-	// 	sendResponse({ success: false, error: error.toString() });
-	// }
-
-	// return true;
+	
 });

@@ -44,8 +44,8 @@ timeline
 
     - FRONTEND:
         -api integration :
-            - orders page (salar)
-            - order detail page with quote(abd+salar)
+            - orders page (salar) DONE
+            - order detail page with quote(abd+salar) DONE
 
         layout:
             -routes theek of admin and user (abd)

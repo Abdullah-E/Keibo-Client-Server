@@ -142,7 +142,8 @@ export const getAllOrders = async (request, reply) => {
 }
 
 export const updateQuote = async (request, reply) => {
-    const { id, quotation } = request.body;
+    const {id} = request.query;
+    const { quotation } = request.body;
     try{
         const { data, error } = await supabase
             .from('order')
