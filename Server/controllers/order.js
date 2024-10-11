@@ -1,6 +1,16 @@
 import supabase from "../config/db.js";
 
 
+/*
+    order flow (order_status, quotation_status):
+    1. create order ("pending", "pending") - done
+    2. admin sets quotation (, "sent") - done
+    3. user accepts quotation (, "accepted") - need to make api
+    4. order starts, setby admin ("in progress",) - need to make api
+    5. order completed, set by admin ("completed",) - need to make api
+
+*/
+
 export const createOrder = async (request, reply) => {
     const {email} = request.query;
     const orderData = request.body;
@@ -33,6 +43,8 @@ export const createOrder = async (request, reply) => {
                     user_id: user.id,
                     ...orderData,
                     items: cartData.items,
+                    order_status: "pending",
+                    quotation_status: "pending",
                 }
             ]);
         if(error) throw error;
@@ -52,15 +64,14 @@ export const createOrder = async (request, reply) => {
 export const getOrders = async (request, reply) => {
     const params = request.query;
 
-    const {email, user_id, recent} = params;
+    const {email, user_id, order_by} = params;
+    const p = params["p"] || 0; //page number
+    const l = params["l"] || 10; //page size
 
     try{
         let query = supabase
             .from("order")
             .select("*");
-        // if(recent){
-        //     query = query.eq("created_at", recent);
-        // }
         console.log(user_id);
 
         
@@ -76,6 +87,10 @@ export const getOrders = async (request, reply) => {
         if(user_id){
             query = query.eq("user_id", user_id);
         }
+        if(order_by){
+            query = query.order(order_by);
+        }
+        query = query.range(p*l, (p+1)*l-1);//pagination
         const { data, error } = await query;
         
         if(error) throw error;
@@ -147,7 +162,10 @@ export const updateQuote = async (request, reply) => {
     try{
         const { data, error } = await supabase
             .from('order')
-            .update({ quotation })
+            .update({ 
+                quotation,
+                quotation_status: "sent", 
+            })
             .eq('id', id);
 
         if (error) throw error;

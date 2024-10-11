@@ -54,5 +54,3 @@ timeline
 
             - user page 
             - user detail page
-            - customer page
-            - customer detail page
