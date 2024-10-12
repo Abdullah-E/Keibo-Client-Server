@@ -100,3 +100,25 @@ export const getUsers = async (request, reply) => {
         reply.status(400).send({ success: false, error: err.message });
     }
 }
+
+export const deleteUser = async (request, reply) => {
+    try{
+        const { id } = request.query;
+
+        const {authData, authError} = await supabase.auth.admin.deleteUser(id);
+        if (authError) throw authError;
+
+        const { data, error } = await supabase
+        .from('user')
+        .delete()
+        .eq('id', id);
+        if (error) throw error;
+
+        return reply.send({ success: true, message: 'User deleted successfully' });
+    }
+    catch(err){
+        fastify.log.error(err);
+        console.error(err);
+        reply.status(400).send({ success: false, error: err.message });
+    }
+}
