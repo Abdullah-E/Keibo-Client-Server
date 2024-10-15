@@ -19,10 +19,10 @@
     "content_scripts": [
         {
         "matches": [
-            "*://*/*1688*",
-            "*://*/*taobao*",
-            "*://*/*tmall*",
-            "*://*/*pinduoduo*"
+            "*://*.1688.com/*",
+            "*://*.taobao.com/*",
+            "*://*.tmall.com/*",
+            "*://*.pinduoduo.com/*"
         ],
         "js": ["app.bundle.js"]
         }

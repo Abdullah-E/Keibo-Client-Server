@@ -167,8 +167,10 @@ export class UI{
         return true;
     }
 
-    updateCartItems(){
+    updateCartItems() {
+        console.log('Updating cart items...');
         const cart = this.cart.items;
+        console.log('Current cart items:', cart);
         const cartItemsContainer = document.querySelector('.cart');
         if (!cartItemsContainer) {
             console.error('Cart container not found');
@@ -178,27 +180,38 @@ export class UI{
         // Remove existing cart items
         const existingItems = cartItemsContainer.querySelectorAll('.cart-item');
         existingItems.forEach(item => item.remove());
+        console.log('Removed existing cart items.');
 
         // Add new cart items
         cart.forEach(item => {
+            console.log('Adding item to cart:', item);
             const itemElement = document.createElement('div');
             itemElement.className = 'cart-item';
+
+            // Check if the SKU item image div exists in the DOM
+            const skuItemImageDiv = document.querySelector('.sku-item-image');
+            const skuItemImageHtml = skuItemImageDiv ? 
+                `<div class="sku-item-image" style="background: url('${skuItemImageDiv.style.backgroundImage}') center center / contain no-repeat; width: 36px; height: 36px; margin-right: 10px;"></div>` :
+                '';
             itemElement.innerHTML = `
+                ${skuItemImageHtml}
                 <img class="product-image" src="${item.imageUrl || 'default-image.jpg'}" alt="Product Image">
                 <div class="item-details">
-                <p class="product-name">${item.product || 'Unknown Product'}</p>
-                <button class="remove-item">✕</button>
-                <p class="product-variants">Variants: </p>
-                <p class="product-price">${item.price || 'N/A'}</p>
-                <input class="product-quantity" value="${item.quantity || 1}" min="1" type="number">
-                <label>Quantity</label>
+                    <p class="product-name">${item.product || 'Unknown Product'}</p>
+                    <button class="remove-item">✕</button>
+                    <p class="product-variants">Variants: </p>
+                    <p class="product-price">${item.price || 'N/A'}</p>
+                    <input class="product-quantity" value="${item.quantity || 1}" min="1" type="number">
+                    <label>Quantity</label>
                 </div>
             `;
+            console.log(skuItemImageHtml)
 
             const removeButton = itemElement.querySelector('.remove-item');
             if (removeButton) {
-                removeButton.addEventListener('click', async ()=> {
-                    await (this.cart.removeItem(item.product));
+                removeButton.addEventListener('click', async () => {
+                    console.log('Removing item from cart:', item.product);
+                    await this.cart.removeItem(item.product);
                     this.updateCartItems();
                 });
             }
@@ -207,6 +220,7 @@ export class UI{
         });
         
         this.updateTotalPrice(cart);
+        console.log('Cart items updated.');
     }
 
     updateTotalPrice(cart){
@@ -278,6 +292,8 @@ export class UI{
         const selectors = [
             '.ItemTitle--mainTitle--2OrrwrD.f-els-2',
             '.mainTitle--O1XCl8e2.f-els-2',
+            ".mainTitle--O1XCl8e2 f-els-2",
+            ".title-text",
             'h1.title',
             '#product-name',
             '[itemprop="name"]'
@@ -309,9 +325,32 @@ export class UI{
         return 'Unknown Price';
     }
 
-    getProductImage(){
-        const imageDiv = document.querySelector('.mainPic--zxTtQs0P');
-        return imageDiv ? imageDiv.src : 'default-image-url.jpg';
+    getProductImage() {
+        const selectors = [
+            '.mainPic--zxTtQs0P',
+            '.product-image',
+            '.image-container img',
+            '.product-photo img',
+            ".scale-img",
+            ".scaled-img"
+        ];
+      
+        for (let selector of selectors) {
+            const element = document.querySelector(selector);
+            if (element) {
+                if (element.src) {
+                    return element.src;
+                } else if (element.style.backgroundImage) {
+                    // Extract the URL from the background-image style
+                    const urlMatch = element.style.backgroundImage.match(/url\(["']?([^"']*)["']?\)/);
+                    if (urlMatch && urlMatch[1]) {
+                        return urlMatch[1];
+                    }
+                }
+            }
+        }
+    
+        return 'default-image-url.jpg';
     }
 
     getProductURL(){
